@@ -1,0 +1,22 @@
+.card {
+    margin: 5px 0px !important;
+    padding: 5px 10px !important;
+    border-radius: 10px !important;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+.cardContent {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.name {
+    font-weight: bolder !important;
+}
+
+.message {
+    text-align: justify;
+    font-style: italic;
+}

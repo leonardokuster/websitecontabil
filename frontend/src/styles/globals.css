@@ -1,0 +1,18 @@
+@font-face {
+  font-family: 'Quicksand';
+  src: url('/fonts/Quicksand-VariableFont_wght.ttf') format('truetype');
+  font-display: swap;
+}
+
+* {
+  margin: 0px;
+  padding: 0px;
+  text-decoration: none;
+  font-family: 'Quicksand', Arial, Helvetica, sans-serif;
+}
+
+:root {
+  --cordestaque: #070E26;
+  --corhover: #202949;
+  --corfundo: #BCCCD9;
+}

@@ -1,0 +1,40 @@
+.formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.options {
+    padding: 5px;
+}
+
+.options:hover {
+    background-color: lightgray;
+    cursor: pointer;
+}
+
+.elementos {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    gap: 10px;
+}
+
+.bttn {
+    background-color: var(--cordestaque) !important;
+    color: white !important;
+    width: 100%;
+}
+
+.bttn:hover {
+    background-image: var(--corhover);
+    color: white;
+}
+
+.secondBttn {
+    color: var(--cordestaque) !important;
+    width: 100%;
+    border: solid 1px var(--cordestaque) !important;
+}

@@ -1,0 +1,51 @@
+"use client";
+
+import React from 'react';
+import AliceCarousel from 'react-alice-carousel';
+import Link from 'next/link';
+import 'react-alice-carousel/lib/alice-carousel.css';
+import styles from '@/components/carousel/carousel.module.css'; 
+import ButtonComponent from '@/components/button/Button';
+
+export default function Carousel() {
+  const slides = [
+    { title: "Abertura de empresa", message: "Cuidamos dos aspectos burocráticos e contábeis provenientes da abertura de uma empresa, gerando maior economia de tempo e alívio das complexidades administrativas." },
+    { title: "Assessoria trabalhista", message: "O entendimento das leis e normativas laborais é crucial para a sustentabilidade e sucesso de qualquer organização, evitando riscos e possíveis litígios trabalhistas." },
+    { title: "Encerramento de empresa", message: "Atuando como um intermediário entre o cliente e os órgãos reguladores, evitamos possíveis implicações legais e financeiras para os sócios e proprietários durante o encerramento de uma empresa." },
+    { title: "Escrituração Contábil e Tributária", message: "Garantimos o cumprimento das obrigações legais de sua empresa através do registro de todas operações financeiras, como receitas, despesas, compras, vendas e investimentos." },
+    { title: "Obrigações acessórias", message: "Garantimos a conformidade legal de sua empresa através do monitoramento do cumprimento das obrigações tributárias e legais por parte dos órgãos governamentais." },
+    { title: "Planejamento estratégico", message: "Através de estratégias financeiras e contábeis, buscamos otimizar o desempenho financeiro e promover a conformidade fiscal para contribuir para o crescimento sustentável do seu negócio." },
+  ];
+
+  const items = slides.map((slide, index) => (
+    <div key={index} className={styles.carouselCard}>
+      <h1 className={styles.title}>{slide.title}</h1>
+      <p className={styles.message}>{slide.message}</p>
+      <Link href="/services">
+        <ButtonComponent type="info" label="Saiba mais" />
+      </Link>
+    </div>
+  ));
+
+  const responsive = {
+    0: { items: 1 },
+    768: { items: 2 },
+    1024: { items: 3 },
+  };
+
+  return (
+    <div className={styles.background}>
+      <div className={styles.carousel}>
+        <AliceCarousel
+          mouseTracking
+          items={items}
+          responsive={responsive}
+          controlsStrategy="alternate" 
+          disableDotsControls={false}
+          disableButtonsControls={true}
+          infinite={true}
+        />
+      </div>
+    </div>
+  );
+}
