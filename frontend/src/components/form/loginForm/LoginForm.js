@@ -3,14 +3,12 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation'; 
 import { useFormik } from "formik";
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+import { TextField, Grid, Box, Typography, Button } from '@mui/material';
 import * as yup from 'yup';
 import styles from '@/components/form/loginForm/loginForm.module.css';
-import Link from 'next/link';
 import axios from 'axios';
 import { motion } from "framer-motion";
-import ButtonComponent from '@/components/button/Button';
+import Link from 'next/link';
 
 const validationSchema = yup.object({
     email: yup
@@ -71,44 +69,59 @@ export default function LoginForm() {
     };
 
     return (
-        <>
-            <motion.div
-                className={styles['loginform']}
-                initial={{ opacity: 0, x: -100 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5 }}
-            >
-                <h2 className={styles['title']}>Seja bem-vindo(a) ao portal do cliente!</h2>
-                <form onSubmit={formik.handleSubmit} className={styles['form']}>
-                    <TextField
-                        id="email"
-                        name="email"
-                        label="E-mail"
-                        autoComplete="email"
-                        variant="standard"
-                        value={formik.values.email}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        error={formik.touched.email && Boolean(formik.errors.email)}
-                        helperText={formik.touched.email && formik.errors.email}
-                    />
-                    <TextField
-                        id="senha"
-                        name="senha"
-                        label="Senha"
-                        variant="standard"
-                        autoComplete="password"
-                        type="password"
-                        value={formik.values.senha}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        error={formik.touched.senha && Boolean(formik.errors.senha)}
-                        helperText={formik.touched.senha && formik.errors.senha}
-                    />
-                    {renderErrorMessage()}
-                    <ButtonComponent type="action" label="Entrar" onClick={formik.handleSubmit} />
-                </form>
-            </motion.div>
-        </>
+        <motion.div
+            initial={{ opacity: 0, x: -100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className={styles.loginform}
+        >
+            <Typography variant="h5" component="h2" className={styles.title}>
+                Seja bem-vindo(a) ao portal do cliente!
+            </Typography>
+            <Box component="form" onSubmit={formik.handleSubmit} className={styles.form}>
+                <Grid container spacing={2}>
+                    <Grid item size={12}>
+                        <TextField
+                            fullWidth
+                            id="email"
+                            name="email"
+                            label="E-mail"
+                            autoComplete="email"
+                            variant="standard"
+                            value={formik.values.email}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.email && Boolean(formik.errors.email)}
+                            helperText={formik.touched.email && formik.errors.email}
+                        />
+                    </Grid>
+                    <Grid item size={12}>
+                        <TextField
+                            fullWidth
+                            id="senha"
+                            name="senha"
+                            label="Senha"
+                            variant="standard"
+                            autoComplete="password"
+                            type="password"
+                            value={formik.values.senha}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.senha && Boolean(formik.errors.senha)}
+                            helperText={formik.touched.senha && formik.errors.senha}
+                        />
+                    </Grid>
+                    <Grid item size={12}>
+                        {renderErrorMessage()}
+                    </Grid>
+  
+                    <Grid item size={12}>
+                        <Button variant="contained" fullWidth type="submit" className={styles.bttn}>
+                            Entrar
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Box>
+        </motion.div>
     );
 }
