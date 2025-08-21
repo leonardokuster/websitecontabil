@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import userToken from '../config/userToken.js';
 import UserService from '../services/userService.js';
+import database from '../config/database.js';
 
 const userService = new UserService();
 
@@ -8,9 +9,9 @@ class UserController {
     static async logarUsuario(req, res) {
         try {
             const { emailPessoal, senha } = req.body;
-            const { usuario, token } = await userService.logarUsuario({ emailPessoal, senha });
+            const { usuario, token, companyId } = await userService.logarUsuario({ emailPessoal, senha });
 
-            return res.status(200).json({ usuario, token });
+            return res.status(200).json({ usuario, token, companyId });
         } catch (error) {
             return res.status(400).json({ error: error.message });
         }

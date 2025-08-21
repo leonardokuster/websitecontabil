@@ -4,9 +4,19 @@ const employeeService = new EmployeeService();
 
 class EmployeeController {
   static async cadastrarFuncionario(req, res) {
+    const { companyId, ...employeeData } = req.body;
+
+    const { id: userId, tipo: userType } = req;
+
+    console.log('Dados recebidos:', req.body);
+    console.log('ID Empresa:', companyId);
+
     try {
-      const { companyId } = req.params; 
-      const funcionario = await employeeService.cadastrarFuncionario(req.body, Number(companyId));
+      if (!companyId) {
+        return res.status(400).json({ error: 'ID da empresa é obrigatório.' });
+      }
+
+      const funcionario = await employeeService.cadastrarFuncionario(employeeData, companyId, userId, userType);
       return res.status(201).json(funcionario);
     } catch (error) {
       return res.status(400).json({ error: error.message });
@@ -36,7 +46,7 @@ class EmployeeController {
   static async buscarFuncionarioPorEmpresaId(req, res) {
     try {
       const { companyId } = req.params;
-      const funcionarios = await employeeService.buscarFuncionarioPorEmpresaId(Number(companyId));
+      const funcionarios = await employeeService.buscarFuncionarioPorEmpresaId(companyId);
       return res.status(200).json(funcionarios);
     } catch (error) {
       return res.status(400).json({ error: error.message });

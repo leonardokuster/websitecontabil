@@ -208,7 +208,7 @@ export default function SignupForm() {
     const handleNext = async () => {
         // 1. Validar o formulário do passo atual ANTES do try/catch
         try {
-            await (step === 0 ? personalSchema : companySchema).validate(formik.values, { abortEarly: false });
+            await personalSchema.validate(formik.values, { abortEarly: false });
         } catch (validationErrors) {
             // Se a validação falhar, define os campos tocados e retorna
             const fieldErrors = {};

@@ -1,7 +1,7 @@
 import database from "../models/index.js";
 
 class EmployeeService {
-  async cadastrarFuncionario(dados, companyId) {
+  async cadastrarFuncionario(dados, companyId, userId, userType) {
     const {
       nome,
       email,
@@ -54,6 +54,12 @@ class EmployeeService {
     const empresa = await database.Company.findByPk(companyId);
     if (!empresa) {
       throw new Error('Empresa não encontrada');
+    }
+
+    if (userType !== 'admin' && userType !== 'collaborator') {
+      if (empresa.userId !== userId) {
+        throw new Error('Acesso negado. Você não tem permissão para adicionar funcionários a esta empresa.');
+      }
     }
 
     const funcionario = await database.Employee.create({

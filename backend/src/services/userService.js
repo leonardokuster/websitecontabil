@@ -5,6 +5,7 @@ import transporter from '../controllers/nodemailerController.js'
 import 'dotenv/config.js';
 import jwt from 'jsonwebtoken';
 import userToken from '../config/userToken.js';
+import { sequelize } from '../models/index.js';
 
 class UserService {
     async logarUsuario({emailPessoal, senha}) {
@@ -20,20 +21,25 @@ class UserService {
             throw new Error('Senha inválida');
         }
 
+        const empresa = await database.Company.findOne({ where: { userId: usuario.id } });
+
         const token = jwt.sign(
             { id: usuario.id, tipo: usuario.tipo },
             userToken.secret,
             { expiresIn: userToken.expiresIn }
         );
 
-        // remove a senha antes de retornar
         const { senha: _, ...usuarioSemSenha } = usuario.toJSON();
 
-        return { usuario: usuarioSemSenha, token };
+        const companyId = empresa ? empresa.id : null;
+
+        return { usuario: usuarioSemSenha, token, companyId };
     }
 
     async cadastrarUsuario(dados) {
         const { nome, telefonePessoal, emailPessoal, dataNascimento, cpf, senha, possuiEmpresa } = dados; 
+
+        const t = await sequelize.transaction();
 
         const existeCpf = await database.User.findOne({ where: { cpf } });
         if (existeCpf) {
@@ -47,45 +53,79 @@ class UserService {
 
         const senhaHash = await bcrypt.hash(senha, 10);
 
-        const novoUsuario = await database.User.create({
-            nome,
-            telefonePessoal,
-            emailPessoal,
-            dataNascimento,
-            cpf,
-            senha: senhaHash,
-            tipo: 'user',
-            possuiEmpresa
-        });
+        try {
+            const novoUsuario = await database.User.create({
+                id: uuidv4(),
+                nome,
+                telefonePessoal,
+                emailPessoal,
+                dataNascimento,
+                cpf,
+                senha: senhaHash,
+                tipo: 'user',
+                possuiEmpresa
+            }, { transaction: t });
 
-        const info = await transporter.sendMail({
-            from: "Escritório Kuster <l.kusterr@gmail.com>",
-            to: emailPessoal,
-            subject: "Obrigado por realizar seu cadastro! - Escritório Küster",
-            html: `
-            <html>
-            <body>
-                <h2>Olá <strong>${nome}</strong>,</h2>
-                <p>Obrigado por se cadastrar em nosso serviço!</p>
-                
-                <p>Para acessar sua conta, visite nosso site <a href='https://escritoriokuster.netlify.app/login'>aqui</a> e faça login usando o e-mail cadastrado em nosso sistema.</p>
+            let novaEmpresa = null;
 
-                <ul>
-                    <li><strong>E-mail:</strong> ${emailPessoal}</li>
-                </ul>
+            if (possuiEmpresa) {
+                novaEmpresa = await database.Company.create({
+                    id: uuidv4(),
+                    cnpj,
+                    nomeFantasia,
+                    razaoSocial,
+                    atividadesExercidas,
+                    capitalSocial,
+                    cep,
+                    endereco, 
+                    numeroEmpresa,
+                    complementoEmpresa,
+                    emailEmpresa,
+                    telefoneEmpresa,
+                    socios,
+                    userId: novoUsuario.id
+                }, { transaction: t });
 
-                <p>Lembre-se de manter suas credenciais seguras e não compartilhá-las com ninguém.</p>
+                novoUsuario.companyId = [novaEmpresa.id];
+                await novoUsuario.save({ transaction: t });
+            };
 
-                <p>Se você tiver alguma dúvida ou precisar de assistência, não hesite em nos contatar.</p>
+            await t.commit();
 
-                <p>Obrigado!</p>
-                <p>Escritório Küster</p>
-            </body>
-            </html>
-            `,
-        });
+            const info = await transporter.sendMail({
+                from: "Escritório Kuster <l.kusterr@gmail.com>",
+                to: emailPessoal,
+                subject: "Obrigado por realizar seu cadastro! - Escritório Küster",
+                html: `
+                <html>
+                <body>
+                    <h2>Olá <strong>${nome}</strong>,</h2>
+                    <p>Obrigado por se cadastrar em nosso serviço!</p>
+                    
+                    <p>Para acessar sua conta, visite nosso site <a href='https://escritoriokuster.netlify.app/login'>aqui</a> e faça login usando o e-mail cadastrado em nosso sistema.</p>
 
-        return novoUsuario;
+                    <ul>
+                        <li><strong>E-mail:</strong> ${emailPessoal}</li>
+                    </ul>
+
+                    <p>Lembre-se de manter suas credenciais seguras e não compartilhá-las com ninguém.</p>
+
+                    <p>Se você tiver alguma dúvida ou precisar de assistência, não hesite em nos contatar.</p>
+
+                    <p>Obrigado!</p>
+                    <p>Escritório Küster</p>
+                </body>
+                </html>
+                `,
+            });
+
+            return novoUsuario;
+
+        } catch (error) {
+            await t.rollback();
+            console.error('Erro ao cadastrar usuário:', error);
+            throw error;
+        } 
     }
 
     async buscarUsuario(id) {
