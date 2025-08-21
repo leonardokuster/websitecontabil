@@ -1,14 +1,7 @@
-import express from 'express';
-import userRoutes from './routes/users.js';
-import cors from 'cors';
+import server from "./src/app.js";
 
-const app = express();
+const PORT = process.env.PORT || 3001;
 
-app.use(express.json());
-app.use(cors());
-
-app.use("/", userRoutes);
-
-app.listen(8800);
-
-//const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(`A aplicação está funcionando na porta ${PORT}!`);
+});
