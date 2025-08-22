@@ -8,10 +8,9 @@ import * as yup from 'yup';
 import styles from '@/components/form/loginForm/loginForm.module.css';
 import axios from 'axios';
 import { motion } from "framer-motion";
-import Link from 'next/link';
 
 const validationSchema = yup.object({
-    email: yup
+    emailPessoal: yup
         .string('E-mail')
         .email('Insira um e-mail válido')
         .matches(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, 'Insira um e-mail válido')
@@ -27,7 +26,7 @@ export default function LoginForm() {
 
     const formik = useFormik({
         initialValues: {
-            email: '',
+            emailPessoal: '',
             senha: '',
         },
         validationSchema: validationSchema,
@@ -83,16 +82,16 @@ export default function LoginForm() {
                     <Grid item size={12}>
                         <TextField
                             fullWidth
-                            id="email"
-                            name="email"
+                            id="emailPessoal"
+                            name="emailPessoal"
                             label="E-mail"
                             autoComplete="email"
                             variant="standard"
-                            value={formik.values.email}
+                            value={formik.values.emailPessoal}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.email && Boolean(formik.errors.email)}
-                            helperText={formik.touched.email && formik.errors.email}
+                            error={formik.touched.emailPessoal && Boolean(formik.errors.emailPessoal)}
+                            helperText={formik.touched.emailPessoal && formik.errors.emailPessoal}
                         />
                     </Grid>
                     <Grid item size={12}>

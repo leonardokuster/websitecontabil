@@ -12,6 +12,11 @@ export default (sequelize) => {
     }
   }
   Contact.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
     fullname: DataTypes.STRING,
     email: DataTypes.STRING,
     phone: DataTypes.STRING,

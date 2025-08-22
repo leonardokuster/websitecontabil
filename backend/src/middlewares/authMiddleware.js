@@ -30,7 +30,7 @@ export default function authMiddleware(roles = []) {
         return res.status(403).json({ error: "Permissão negada" });
       }
 
-      req.id = decoded.id;
+      req.userId = decoded.id;
       req.tipo = decoded.tipo;
 
       return next();

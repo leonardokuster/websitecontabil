@@ -4,10 +4,10 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Employees', {
       id: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.literal('gen_random_uuid()'),
         allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
+        primaryKey: true
       },
       nome: {
         type: Sequelize.STRING
@@ -133,7 +133,11 @@ module.exports = {
         type: Sequelize.STRING
       },
       companyId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: { model: 'Companies', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       createdAt: {
         allowNull: false,

@@ -8,6 +8,11 @@ export default (sequelize) => {
     }
   }
   Company.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
     cnpj: DataTypes.STRING,
     nomeFantasia: DataTypes.STRING,
     razaoSocial: DataTypes.STRING,
@@ -20,7 +25,10 @@ export default (sequelize) => {
     emailEmpresa: DataTypes.STRING,
     telefoneEmpresa: DataTypes.STRING,
     socios: DataTypes.STRING,
-    userId: DataTypes.INTEGER
+    userId: {
+      type: DataTypes.UUID, 
+      allowNull: false
+    }
   }, {
     sequelize,
     modelName: 'Company',

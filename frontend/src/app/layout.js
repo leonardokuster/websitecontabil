@@ -1,4 +1,5 @@
 import React from "react";
+import ConditionalLayout from "@/components/conditionalLayout/conditionalLayout";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import '@/styles/globals.css';
@@ -16,9 +17,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR">
       <body>
-        <Header />
-        <Wrapper>{children}</Wrapper>
-        <Footer />
+        <ConditionalLayout>
+          <Wrapper>{children}</Wrapper>
+        </ConditionalLayout>
       </body>
     </html>
   );

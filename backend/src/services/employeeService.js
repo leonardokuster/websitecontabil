@@ -1,4 +1,5 @@
 import database from "../models/index.js";
+import { v4 as uuidv4 } from 'uuid';
 
 class EmployeeService {
   async cadastrarFuncionario(dados, companyId, userId, userType) {
@@ -63,6 +64,7 @@ class EmployeeService {
     }
 
     const funcionario = await database.Employee.create({
+      id: uuidv4(),
       nome,
       email,
       telefone,

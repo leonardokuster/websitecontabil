@@ -1,5 +1,6 @@
 import { where } from "sequelize";
 import database from "../models/index.js";
+import { v4 as uuidv4 } from 'uuid';
 
 class CompanyService {
     async criarEmpresa(dados, userId) {
@@ -29,6 +30,7 @@ class CompanyService {
         }
 
         const novaEmpresa = await database.Company.create({
+            id: uuidv4(),
             cnpj,
             nomeFantasia,
             razaoSocial,

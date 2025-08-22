@@ -8,11 +8,19 @@ export default (sequelize) => {
     }
   }
   Dependent.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
     nomeDependente: DataTypes.STRING,
     dataNascimentoDependente: DataTypes.DATE,
     cpfDependente: DataTypes.STRING,
     localNascimentoDependente: DataTypes.STRING,
-    employeeId: DataTypes.INTEGER
+    employeeId: {
+      type: DataTypes.UUID, 
+      allowNull: false
+    }
   }, {
     sequelize,
     modelName: 'Dependent',

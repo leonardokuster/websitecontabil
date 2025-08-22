@@ -1,8 +1,10 @@
 import database from "../models/index.js";
+import { v4 as uuidv4 } from 'uuid';
 
 class ContactService {
   async criarContato(dados) {
     const contato = await database.Contact.create({
+      id: uuidv4(),
       fullname: dados.fullname,
       email: dados.email,
       phone: dados.phone,

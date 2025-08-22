@@ -177,27 +177,36 @@ export default function SignupForm() {
         validateOnBlur: true,
             onSubmit: async (values, { resetForm }) => {
             try {
-                const companyData = {
-                    ...values,
-                    userId: values.userId,
+                await formik.validateForm(values);
+
+                if (values.possuiEmpresa) {
+                    const companyData = { 
+                        cnpj: values.cnpj,
+                        nomeFantasia: values.nomeFantasia,
+                        razaoSocial: values.razaoSocial,
+                        atividadesExercidas: values.atividadesExercidas,
+                        capitalSocial: values.capitalSocial.replace(/\./g, '').replace(',', '.'), 
+                        cep: values.cep,
+                        endereco: values.endereco,
+                        numeroEmpresa: values.numeroEmpresa,
+                        complementoEmpresa: values.complementoEmpresa,
+                        emailEmpresa: values.emailEmpresa,
+                        telefoneEmpresa: values.telefoneEmpresa,
+                        socios: values.socios,
+                    };
+
+                    const companyResponse = await axios.post('http://localhost:3001/company/register', { ...companyData, userId: values.userId }, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${values.token}`
+                        },
+                    });
+                    console.log('Empresa cadastrada com sucesso:', companyResponse.data);
+                    setMessage('Cadastro realizado! Faça login para continuar.');
+                    setIsSuccess(true);
+                    resetForm();
+                    setStep(0);
                 }
-
-                if (companyData.capitalSocial) {
-                    companyData.capitalSocial = companyData.capitalSocial.replace(/\./g, '').replace(',', '.');
-                }
-
-                const companyResponse = await axios.post('http://localhost:3001/company/register', companyData, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${values.token}`
-                    },
-                });
-                console.log('Empresa cadastrada com sucesso:', companyResponse.data);
-
-                setMessage('Cadastro realizado com sucesso!');
-                setIsSuccess(true);
-                formik.resetForm();
-                setStep(0);
             } catch (error) {
                 setMessage(error.response?.data?.message || 'Erro no cadastro.');
                 setIsSuccess(false);
@@ -235,8 +244,6 @@ export default function SignupForm() {
                     const [day, month, year] = formattedValues.dataNascimento.split('/');
                     formattedValues.dataNascimento = `${year}-${month}-${day}`;
                 }
-                formattedValues.cpf = formattedValues.cpf.replace(/\D/g, '');
-                formattedValues.telefonePessoal = formattedValues.telefonePessoal.replace(/\D/g, '');
                 
                 const userResponse = await axios.post('http://localhost:3001/user/register', formattedValues, {
                     headers: { 'Content-Type': 'application/json' },
@@ -266,7 +273,7 @@ export default function SignupForm() {
                 headers: { 'Content-Type': 'application/json' },
             });
 
-            setMessage('Cadastro de usuário realizado com sucesso!');
+            setMessage('Cadastro realizado! Faça login para continuar.');
             setIsSuccess(true);
             formik.resetForm();
             setStep(0);
@@ -473,7 +480,7 @@ export default function SignupForm() {
                                 value={formik.values.razaoSocial}
                                 onChange={formik.handleChange}
                                 error={formik.touched.razaoSocial && Boolean(formik.errors.razaoSocial)}
-                                helperText={formik.touched.razaoSocial && formik.errors.razoSocial}
+                                helperText={formik.touched.razaoSocial && formik.errors.razaoSocial}
                             />
                             <TextField
                                 fullWidth
@@ -587,10 +594,10 @@ export default function SignupForm() {
                             id="socios"
                             name="socios"
                             label="Nome dos sócios"
-                            value={formik.values.nomeSocios}
+                            value={formik.values.socios}
                             onChange={formik.handleChange}
-                            error={formik.touched.nomeSocios && Boolean(formik.errors.nomeSocios)}
-                            helperText={formik.touched.nomeSocios && formik.errors.nomeSocios}
+                            error={formik.touched.socios && Boolean(formik.errors.socios)}
+                            helperText={formik.touched.socios && formik.errors.socios}
                         />
                         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', gap: 10 }}>
                             <Button variant='contained' onClick={handleBack} className={styles.backButton}>

@@ -39,8 +39,6 @@ class UserService {
     async cadastrarUsuario(dados) {
         const { nome, telefonePessoal, emailPessoal, dataNascimento, cpf, senha, possuiEmpresa } = dados; 
 
-        const t = await sequelize.transaction();
-
         const existeCpf = await database.User.findOne({ where: { cpf } });
         if (existeCpf) {
             throw new Error('CPF já cadastrado');
@@ -53,79 +51,47 @@ class UserService {
 
         const senhaHash = await bcrypt.hash(senha, 10);
 
-        try {
-            const novoUsuario = await database.User.create({
-                id: uuidv4(),
-                nome,
-                telefonePessoal,
-                emailPessoal,
-                dataNascimento,
-                cpf,
-                senha: senhaHash,
-                tipo: 'user',
-                possuiEmpresa
-            }, { transaction: t });
+        const novoUsuario = await database.User.create({
+            id: uuidv4(),
+            nome,
+            telefonePessoal,
+            emailPessoal,
+            dataNascimento,
+            cpf,
+            senha: senhaHash,
+            tipo: 'user',
+            possuiEmpresa
+        });
 
-            let novaEmpresa = null;
 
-            if (possuiEmpresa) {
-                novaEmpresa = await database.Company.create({
-                    id: uuidv4(),
-                    cnpj,
-                    nomeFantasia,
-                    razaoSocial,
-                    atividadesExercidas,
-                    capitalSocial,
-                    cep,
-                    endereco, 
-                    numeroEmpresa,
-                    complementoEmpresa,
-                    emailEmpresa,
-                    telefoneEmpresa,
-                    socios,
-                    userId: novoUsuario.id
-                }, { transaction: t });
+        const info = await transporter.sendMail({
+            from: "Escritório Kuster <l.kusterr@gmail.com>",
+            to: emailPessoal,
+            subject: "Obrigado por realizar seu cadastro! - Escritório Küster",
+            html: `
+            <html>
+            <body>
+                <h2>Olá <strong>${nome}</strong>,</h2>
+                <p>Obrigado por se cadastrar em nosso serviço!</p>
+                
+                <p>Para acessar sua conta, visite nosso site <a href='https://escritoriokuster.netlify.app/login'>aqui</a> e faça login usando o e-mail cadastrado em nosso sistema.</p>
 
-                novoUsuario.companyId = [novaEmpresa.id];
-                await novoUsuario.save({ transaction: t });
-            };
+                <ul>
+                    <li><strong>E-mail:</strong> ${emailPessoal}</li>
+                </ul>
 
-            await t.commit();
+                <p>Lembre-se de manter suas credenciais seguras e não compartilhá-las com ninguém.</p>
 
-            const info = await transporter.sendMail({
-                from: "Escritório Kuster <l.kusterr@gmail.com>",
-                to: emailPessoal,
-                subject: "Obrigado por realizar seu cadastro! - Escritório Küster",
-                html: `
-                <html>
-                <body>
-                    <h2>Olá <strong>${nome}</strong>,</h2>
-                    <p>Obrigado por se cadastrar em nosso serviço!</p>
-                    
-                    <p>Para acessar sua conta, visite nosso site <a href='https://escritoriokuster.netlify.app/login'>aqui</a> e faça login usando o e-mail cadastrado em nosso sistema.</p>
+                <p>Se você tiver alguma dúvida ou precisar de assistência, não hesite em nos contatar.</p>
 
-                    <ul>
-                        <li><strong>E-mail:</strong> ${emailPessoal}</li>
-                    </ul>
+                <p>Obrigado!</p>
+                <p>Escritório Küster</p>
+            </body>
+            </html>
+            `,
+        });
 
-                    <p>Lembre-se de manter suas credenciais seguras e não compartilhá-las com ninguém.</p>
-
-                    <p>Se você tiver alguma dúvida ou precisar de assistência, não hesite em nos contatar.</p>
-
-                    <p>Obrigado!</p>
-                    <p>Escritório Küster</p>
-                </body>
-                </html>
-                `,
-            });
-
-            return novoUsuario;
-
-        } catch (error) {
-            await t.rollback();
-            console.error('Erro ao cadastrar usuário:', error);
-            throw error;
-        } 
+        return novoUsuario;
     }
 
     async buscarUsuario(id) {

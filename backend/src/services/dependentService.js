@@ -1,8 +1,10 @@
 import database from "../models/index.js";
+import { v4 as uuidv4 } from 'uuid';
 
 class DependentService {
   async cadastrarDependente(dados, employeeId) {
     const dependente = await database.Dependent.create({
+      id:uuidv4(),
       ...dados,
       employeeId,
     });

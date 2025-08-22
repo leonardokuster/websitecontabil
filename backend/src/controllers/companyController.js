@@ -6,6 +6,8 @@ class CompanyController {
   static async criarEmpresa(req, res) {
     try {
       const userId = req.userId; 
+      console.log('Dados recebidos do frontend empresa:', req.body);
+      console.log('UserID:', userId);
       const empresa = await companyService.criarEmpresa(req.body, userId);
       return res.status(201).json(empresa);
     } catch (error) {
