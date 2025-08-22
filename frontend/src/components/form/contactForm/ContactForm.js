@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useFormik } from "formik";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
 import * as yup from 'yup';
 import styles from '@/components/form/contactForm/contactForm.module.css';
 import Link from 'next/link';
@@ -25,7 +26,7 @@ const validationSchema = yup.object({
     phone: yup
         .string('Insira seu número de celular')
         .required('Campo obrigatório'),
-    content: yup
+    message: yup
         .string('Sua mensagem')
         .required('Insira sua mensagem'),
 })
@@ -49,15 +50,15 @@ export default function ContactForm({ showSecondTextField, showSecondButton, sec
             fullname: '',
             email: '',
             phone: '',
-            content: '',
+            message: '',
         },
         validationSchema: validationSchema,
         onSubmit: async (values, { resetForm }) => {
             try {
-              const response = await axios.post('https://api-formulario.vercel.app/contato', values, {
+              const response = await axios.post('http://localhost:3001/contact/', values, {
                 headers: { 'Content-Type': 'application/json' },
               });
-              setMessage(response.data.message);
+              setMessage('Sua mensagem foi enviada com sucesso! Em breve nossa equipe entrará em contato.');
               resetForm();
             } catch (err) {
               setMessage(err.response.data.message);
@@ -85,9 +86,9 @@ export default function ContactForm({ showSecondTextField, showSecondButton, sec
             }}
         >
             {services.map((option) => (
-                <option key={option.value} value={option.value} className={styles['options']}>
+                <MenuItem key={option.value} value={option.value} className={styles['options']}>
                     {option.label}
-                </option>
+                </MenuItem>
             ))}
         </TextField>
     ) : null;
@@ -135,18 +136,18 @@ export default function ContactForm({ showSecondTextField, showSecondButton, sec
                 }}
             />
             <TextField
-                id="content"
-                name="content"
+                id="message"
+                name="message"
                 label="Mensagem"
                 variant="standard"
                 autoComplete="off"
                 multiline
                 rows={4}
-                value={formik.values.content}
+                value={formik.values.message}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={formik.touched.content && Boolean(formik.errors.content)}
-                helperText={formik.touched.content && formik.errors.content}
+                error={formik.touched.message && Boolean(formik.errors.message)}
+                helperText={formik.touched.message && formik.errors.message}
             />
             {message ? <h3 style={{ fontSize: '0.84em', color: '#202949', textAlign: 'left'}}>{message}</h3> : ''}
             <div className={styles['elementos']}>

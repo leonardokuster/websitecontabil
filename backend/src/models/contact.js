@@ -21,7 +21,7 @@ export default (sequelize) => {
     email: DataTypes.STRING,
     phone: DataTypes.STRING,
     subject: DataTypes.STRING,
-    content: DataTypes.TEXT,
+    message: DataTypes.TEXT,
     status: {
       type: DataTypes.ENUM('pendente', 'em_andamento', 'atendido'),
       defaultValue: 'pendente',

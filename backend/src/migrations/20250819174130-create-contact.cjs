@@ -21,7 +21,7 @@ module.exports = {
       subject: {
         type: Sequelize.STRING
       },
-      content: {
+      message: {
         type: Sequelize.TEXT
       },
       status: {

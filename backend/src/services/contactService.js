@@ -9,7 +9,7 @@ class ContactService {
       email: dados.email,
       phone: dados.phone,
       subject: dados.subject,
-      content: dados.content,
+      message: dados.message,
       status: "pendente" 
     });
 
