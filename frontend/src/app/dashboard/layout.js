@@ -1,6 +1,6 @@
 import React from "react";
-import Header from "@/components/header/Header";
-import Footer from "@/components/footer/Footer";
+import Header from "@/app/dashboard/components/header/Header";
+import Footer from "@/app/dashboard/components/footer/Footer";
 import '@/styles/globals.css';
 import Wrapper from "@/app/wrapper";
 
@@ -16,7 +16,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR">
       <body>
+        <Header />
         <Wrapper>{children}</Wrapper>
+        <Footer />
       </body>
     </html>
   );

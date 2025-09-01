@@ -157,6 +157,10 @@ class UserService {
             throw new Error('Erro ao atulizar tipo de usuário');
         }
     }
+
+    async logout() {
+        return true;
+    }
 }
 
 export default UserService;

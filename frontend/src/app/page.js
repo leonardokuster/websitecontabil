@@ -81,12 +81,13 @@ export default function Home() {
                 <Grid item size={{ xs: 12, md: 6 }}>
                 <Box sx={{ textAlign: { xs: 'center', md: 'left' }, mt: { xs: '0px', md: '50px' } }}>
                     <Typography variant="h5" component="h1" gutterBottom>
-                    Otimize sua gestão empresarial
+                    
                     </Typography>
-                    <Typography variant="h6" component="h2" sx={{ mb: 4, textAlign: { xs: 'center', md: 'justify' } }}>
-                    Nossa equipe está pronta para impulsionar sua contabilidade para o sucesso!
+                    <Typography >
                     </Typography>
                     <ContactForm
+                        title="Otimize sua gestão empresarial"
+                        subtitle="Nossa equipe está pronta para impulsionar sua contabilidade para o sucesso!" 
                         showSecondTextField={false}
                         showSecondButton={false}
                         secondButtonText=''

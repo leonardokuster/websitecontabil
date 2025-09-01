@@ -4,8 +4,7 @@ import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
-import { TextField, Button, Stepper, Step, StepLabel, Box, Alert, FormControlLabel, Checkbox, Divider } from '@mui/material';
-import styles from '@/components/form/signupForm/signupForm.module.css';
+import { TextField, Button, Stepper, Step, StepLabel, Box, Alert, FormControlLabel, Checkbox, Paper, Grid, Typography } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import PhoneMask from '@/components/form/masks/phone/PhoneMask';
 import CpfMask from '@/components/form/masks/cpf/CpfMask';
@@ -292,327 +291,371 @@ export default function SignupForm() {
     };
 
     return (
-        <Box className={styles.container}>
-        <Stepper activeStep={step} alternativeLabel>
-            {steps.map((label) => (
-            <Step key={label}><StepLabel>{label}</StepLabel></Step>
-            ))}
-        </Stepper>
+        < Paper elevation={3} sx={{ p: 4, maxWidth: 800, mx: 'auto' }}>
+            <Stepper activeStep={step} alternativeLabel>
+                {steps.map((label) => (
+                <Step key={label}><StepLabel>{label}</StepLabel></Step>
+                ))}
+            </Stepper>
 
-        {message && (
-            <Box sx={{ mt: 2 }}>
-            <Alert severity={isSuccess ? 'success' : 'error'}>{message}</Alert>
+            {message && (
+                <Box sx={{ mt: 2 }}>
+                <Alert severity={isSuccess ? 'success' : 'error'}>{message}</Alert>
+                </Box>
+            )}
+
+            <Box component="form" onSubmit={formik.handleSubmit} >
+                <AnimatePresence mode="wait">
+                    {step === 0 && (
+                        <motion.div
+                            key="step0"
+                            variants={motionVariants}
+                            initial="initial"
+                            animate="animate"
+                            exit="exit"
+                            transition={{ duration: 0.5 }}
+                        >
+                            <Grid container spacing={2}>
+                                <Grid item size={12}>
+                                    <TextField 
+                                        fullWidth 
+                                        margin="normal" 
+                                        id="nome" 
+                                        name="nome" 
+                                        label="Nome completo"
+                                        value={formik.values.nome} 
+                                        onChange={formik.handleChange}
+                                        error={formik.touched.nome && Boolean(formik.errors.nome)}
+                                        helperText={formik.touched.nome && formik.errors.nome} 
+                                    />
+                                </Grid>
+                                <Grid item size={{ xs: 12, md: 6 }}>
+                                    <TextField
+                                        fullWidth
+                                        margin="normal"
+                                        id="emailPessoal"
+                                        name="emailPessoal"
+                                        label="Email pessoal"
+                                        value={formik.values.emailPessoal}
+                                        onChange={formik.handleChange}
+                                        error={formik.touched.emailPessoal && Boolean(formik.errors.emailPessoal)}
+                                        helperText={formik.touched.emailPessoal && formik.errors.emailPessoal}
+                                    />
+                                </Grid>
+                                <Grid item size={{ xs: 12, md: 6 }}>
+                                    <TextField
+                                        fullWidth
+                                        margin="normal"
+                                        id="telefonePessoal"
+                                        name="telefonePessoal"
+                                        label="Telefone pessoal"
+                                        value={formik.values.telefonePessoal}
+                                        onChange={formik.handleChange}
+                                        error={formik.touched.telefonePessoal && Boolean(formik.errors.telefonePessoal)}
+                                        helperText={formik.touched.telefonePessoal && formik.errors.telefonePessoal}
+                                        slotProps={{
+                                            input: { inputComponent: PhoneMask }
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item size={{ xs: 12, md: 6 }}>
+                                    <TextField
+                                        fullWidth
+                                        margin="normal"
+                                        id="cpf"
+                                        name="cpf"
+                                        label="CPF"
+                                        value={formik.values.cpf}
+                                        onChange={formik.handleChange}
+                                        error={formik.touched.cpf && Boolean(formik.errors.cpf)}
+                                        helperText={formik.touched.cpf && formik.errors.cpf}
+                                        slotProps={{
+                                            input: { inputComponent: CpfMask }
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item size={{ xs: 12, md: 6 }}>
+                                    <TextField
+                                        fullWidth
+                                        margin="normal"
+                                        id="dataNascimento"
+                                        name="dataNascimento"
+                                        label="Data de nascimento"
+                                        value={formik.values.dataNascimento}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur} 
+                                        error={formik.touched.dataNascimento && Boolean(formik.errors.dataNascimento)}
+                                        helperText={formik.touched.dataNascimento && formik.errors.dataNascimento}
+                                        slotProps={{
+                                            inputLabel: { shrink: true },
+                                            input: { inputComponent: DateMask }
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item size={{ xs: 12, md: 6 }}>
+                                    <TextField
+                                        fullWidth
+                                        margin="normal"
+                                        id="senha"
+                                        name="senha"
+                                        type="password"
+                                        label="Senha"
+                                        value={formik.values.senha}
+                                        onChange={formik.handleChange}
+                                        error={formik.touched.senha && Boolean(formik.errors.senha)}
+                                        helperText={formik.touched.senha && formik.errors.senha} 
+                                    />
+                                </Grid>
+                                <Grid item size={{ xs: 12, md: 6 }}>
+                                    <TextField
+                                        fullWidth
+                                        margin="normal"
+                                        id="confisenha"
+                                        name="confisenha"
+                                        type="password"
+                                        label="Confirme sua senha"
+                                        value={formik.values.confisenha}
+                                        onChange={formik.handleChange}
+                                        error={formik.touched.confisenha && Boolean(formik.errors.confisenha)}
+                                        helperText={formik.touched.confisenha && formik.errors.confisenha}
+                                    />
+                                </Grid>
+                                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', width: '100%'}}>
+                                    <FormControlLabel
+                                        control={<Checkbox name="possuiEmpresa" checked={formik.values.possuiEmpresa} onChange={formik.handleChange} />}
+                                        label="Possuo empresa"
+                                    />
+                                    <Button 
+                                        fullWidth
+                                        variant='contained' 
+                                        onClick={handleNext} 
+                                        sx={{
+                                            bgcolor: 'var(--cordestaque)',
+                                            '&:hover': {
+                                                bgcolor: 'var(--corhover)',
+                                            },
+                                        }}
+                                    >
+                                        {formik.values.possuiEmpresa ? 'Próximo' : 'Cadastrar'}
+                                    </Button>
+                                </Box>
+                            </Grid>
+                        </motion.div>
+                    )}
+                    {step === 1 && (
+                        <motion.div
+                            key="step1"
+                            variants={motionVariants}
+                            initial="initial"
+                            animate="animate"
+                            exit="exit"
+                            transition={{ duration: 0.5 }}
+                        >
+                            {formik.values.possuiEmpresa && (
+                                <Grid container spacing={2}>
+                                    <Grid item size={{ xs: 12, md: 6 }}>
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            id="cnpj"
+                                            name="cnpj"
+                                            label="CNPJ"
+                                            value={formik.values.cnpj}
+                                            onChange={formik.handleChange}
+                                            error={formik.touched.cnpj && Boolean(formik.errors.cnpj)}
+                                            helperText={formik.touched.cnpj && formik.errors.cnpj}
+                                            slotProps={{
+                                                input: { inputComponent: CnpjMask }
+                                            }}
+                                        />
+                                    </Grid>
+                                    <Grid item size={{ xs: 12, md: 6 }}>
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            id="nomeFantasia"
+                                            name="nomeFantasia"
+                                            label="Nome fantasia"
+                                            value={formik.values.nomeFantasia}
+                                            onChange={formik.handleChange}
+                                            error={formik.touched.nomeFantasia && Boolean(formik.errors.nomeFantasia)}
+                                            helperText={formik.touched.nomeFantasia && formik.errors.nomeFantasia}
+                                        />
+                                    </Grid>
+                                    <Grid item size={{ xs: 12, md: 6 }}>
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            id="razaoSocial"
+                                            name="razaoSocial"
+                                            label="Razão social"
+                                            value={formik.values.razaoSocial}
+                                            onChange={formik.handleChange}
+                                            error={formik.touched.razaoSocial && Boolean(formik.errors.razaoSocial)}
+                                            helperText={formik.touched.razaoSocial && formik.errors.razaoSocial}
+                                        />
+                                    </Grid>
+                                    <Grid item size={{ xs: 12, md: 6 }}>
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            id="capitalSocial"
+                                            name="capitalSocial"
+                                            label="Capital social"
+                                            value={formik.values.capitalSocial}
+                                            onChange={formik.handleChange}
+                                            error={formik.touched.capitalSocial && Boolean(formik.errors.capitalSocial)}
+                                            helperText={formik.touched.capitalSocial && formik.errors.capitalSocial}
+                                            slotProps={{
+                                                input: { inputComponent: CurrencyMask }
+                                            }}
+                                        />
+                                    </Grid>
+                                    <Grid item size={12}>
+                                        <TextField 
+                                            fullWidth 
+                                            margin="normal" 
+                                            id="atividadesExercidas" 
+                                            name="atividadesExercidas" 
+                                            label="Atividades exercidas"
+                                            value={formik.values.atividadesExercidas} 
+                                            onChange={formik.handleChange}
+                                            error={formik.touched.atividadesExercidas && Boolean(formik.errors.atividadesExercidas)}
+                                            helperText={formik.touched.atividadesExercidas && formik.errors.atividadesExercidas} 
+                                        />
+                                    </Grid>
+                                    <Grid item size={12}>
+                                        <TextField 
+                                            fullWidth 
+                                            margin="normal" 
+                                            id="cep" 
+                                            name="cep" 
+                                            label="CEP"
+                                            value={formik.values.cep} 
+                                            onChange={(e) => {
+                                                formik.handleChange(e);
+                                                fetchAddress(e.target.value);
+                                            }}
+                                            error={formik.touched.cep && Boolean(formik.errors.cep)}
+                                            helperText={formik.touched.cep && formik.errors.cep} 
+                                        />
+                                    </Grid>
+                                    <Grid item size={{ xs: 12, md: 6 }}>
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            id="endereco"
+                                            name="endereco"
+                                            label="Endereço"
+                                            value={formik.values.endereco}
+                                            onChange={formik.handleChange}
+                                            error={formik.touched.endereco && Boolean(formik.errors.endereco)}
+                                            helperText={formik.touched.endereco && formik.errors.endereco}
+                                        />
+                                    </Grid>
+                                    <Grid item size={{ xs: 12, md: 3 }}>
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            id="numeroEmpresa"
+                                            name="numeroEmpresa"
+                                            label="Número"
+                                            value={formik.values.numeroEmpresa}
+                                            onChange={formik.handleChange}
+                                            error={formik.touched.numeroEmpresa && Boolean(formik.errors.numeroEmpresa)}
+                                            helperText={formik.touched.numeroEmpresa && formik.errors.numeroEmpresa}
+                                        />
+                                    </Grid>
+                                    <Grid item size={{ xs: 12, md: 3 }}>
+                                        <TextField 
+                                            fullWidth 
+                                            margin="normal" 
+                                            id="complementoEmpresa" 
+                                            name="complementoEmpresa" 
+                                            label="Complemento"
+                                            value={formik.values.complementoEmpresa} 
+                                            onChange={formik.handleChange} 
+                                        />
+                                    </Grid>
+                                    <Grid item size={{ xs: 12, md: 6 }}>
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            id="emailEmpresa"
+                                            name="emailEmpresa"
+                                            label="Email da empresa"
+                                            value={formik.values.emailEmpresa}
+                                            onChange={formik.handleChange}
+                                            error={formik.touched.emailEmpresa && Boolean(formik.errors.emailEmpresa)}
+                                            helperText={formik.touched.emailEmpresa && formik.errors.emailEmpresa}
+                                        />
+                                    </Grid>
+                                    <Grid item size={{ xs: 12, md: 6 }}>
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            id="telefoneEmpresa"
+                                            name="telefoneEmpresa"
+                                            label="Telefone da empresa"
+                                            value={formik.values.telefoneEmpresa}
+                                            onChange={formik.handleChange}
+                                            error={formik.touched.telefoneEmpresa && Boolean(formik.errors.telefoneEmpresa)}
+                                            helperText={formik.touched.telefoneEmpresa && formik.errors.telefoneEmpresa}
+                                            slotProps={{
+                                                input: { inputComponent: PhoneMask }
+                                            }}
+                                        />
+                                    </Grid>
+                                    <Grid item size={12}>
+                                        <Typography variant="h7" align="left" gutterBottom>
+                                            Caso possua, informe o nome dos sócios.
+                                        </Typography>
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            id="socios"
+                                            name="socios"
+                                            label="Nome dos sócios"
+                                            value={formik.values.socios}
+                                            onChange={formik.handleChange}
+                                            error={formik.touched.socios && Boolean(formik.errors.socios)}
+                                            helperText={formik.touched.socios && formik.errors.socios}
+                                        />
+                                    </Grid>  
+                                    <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', gap: { xs: 2, md: 10 } }}>
+                                        <Button 
+                                            variant='contained' 
+                                            onClick={handleBack} 
+                                            sx={{
+                                                color: 'var(--cordestaque)',
+                                                bgcolor: 'white',
+                                                width: '100%',
+                                                border: '1px solid var(--cordestaque)',
+                                            }}
+                                        >
+                                            Voltar
+                                        </Button>
+                                        <Button 
+                                            fullWidth
+                                            variant="contained" 
+                                            type="submit" 
+                                            disabled={formik.isSubmitting} 
+                                            sx={{
+                                                bgcolor: 'var(--cordestaque)',
+                                                '&:hover': {
+                                                    bgcolor: 'var(--corhover)',
+                                                },
+                                            }}
+                                        >
+                                            {formik.isSubmitting ? 'Enviando...' : 'Cadastrar'}
+                                        </Button>
+                                    </Box>
+                                </Grid>
+                            )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </Box>
-        )}
-
-        <form onSubmit={formik.handleSubmit}>
-            <AnimatePresence mode="wait">
-                {step === 0 && (
-                    <motion.div
-                    key="step0"
-                    variants={motionVariants}
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                    transition={{ duration: 0.5 }}
-                    >
-                    <TextField 
-                        fullWidth 
-                        margin="normal" 
-                        id="nome" 
-                        name="nome" 
-                        label="Nome completo"
-                        value={formik.values.nome} 
-                        onChange={formik.handleChange}
-                        error={formik.touched.nome && Boolean(formik.errors.nome)}
-                        helperText={formik.touched.nome && formik.errors.nome} 
-                    />
-
-                    <div className={styles.formfield}>
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            id="emailPessoal"
-                            name="emailPessoal"
-                            label="Email pessoal"
-                            value={formik.values.emailPessoal}
-                            onChange={formik.handleChange}
-                            error={formik.touched.emailPessoal && Boolean(formik.errors.emailPessoal)}
-                            helperText={formik.touched.emailPessoal && formik.errors.emailPessoal}
-                        />
-
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            id="telefonePessoal"
-                            name="telefonePessoal"
-                            label="Telefone pessoal"
-                            value={formik.values.telefonePessoal}
-                            onChange={formik.handleChange}
-                            error={formik.touched.telefonePessoal && Boolean(formik.errors.telefonePessoal)}
-                            helperText={formik.touched.telefonePessoal && formik.errors.telefonePessoal}
-                            slotProps={{
-                                input: { inputComponent: PhoneMask }
-                            }}
-                        />
-                    </div>
-
-                    <div className={styles.formfield}>
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            id="cpf"
-                            name="cpf"
-                            label="CPF"
-                            value={formik.values.cpf}
-                            onChange={formik.handleChange}
-                            error={formik.touched.cpf && Boolean(formik.errors.cpf)}
-                            helperText={formik.touched.cpf && formik.errors.cpf}
-                            slotProps={{
-                                input: { inputComponent: CpfMask }
-                            }}
-                        />
-
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            id="dataNascimento"
-                            name="dataNascimento"
-                            label="Data de nascimento"
-                            value={formik.values.dataNascimento}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur} 
-                            error={formik.touched.dataNascimento && Boolean(formik.errors.dataNascimento)}
-                            helperText={formik.touched.dataNascimento && formik.errors.dataNascimento}
-                            slotProps={{
-                                inputLabel: { shrink: true },
-                                input: { inputComponent: DateMask }
-                            }}
-                        />
-                    </div>
-
-                    <div className={styles.formfield}>
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            id="senha"
-                            name="senha"
-                            type="password"
-                            label="Senha"
-                            value={formik.values.senha}
-                            onChange={formik.handleChange}
-                            error={formik.touched.senha && Boolean(formik.errors.senha)}
-                            helperText={formik.touched.senha && formik.errors.senha} />
-
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            id="confisenha"
-                            name="confisenha"
-                            type="password"
-                            label="Confirme sua senha"
-                            value={formik.values.confisenha}
-                            onChange={formik.handleChange}
-                            error={formik.touched.confisenha && Boolean(formik.errors.confisenha)}
-                            helperText={formik.touched.confisenha && formik.errors.confisenha}
-                        />
-                    </div>
-                
-                    <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-                        <FormControlLabel
-                        control={<Checkbox name="possuiEmpresa" checked={formik.values.possuiEmpresa} onChange={formik.handleChange} />}
-                        label="Possuo empresa"
-                        />
-                        <Button variant='contained' onClick={handleNext} className={styles.nextButton}>
-                        {formik.values.possuiEmpresa ? 'Próximo' : 'Cadastrar'}
-                        </Button>
-                    </Box>
-                </motion.div>
-            )}
-
-            {step === 1 && (
-                <motion.div
-                    key="step1"
-                    variants={motionVariants}
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                    transition={{ duration: 0.5 }}
-                >
-
-                    {formik.values.possuiEmpresa && (
-                        <>
-                        <div className={styles.formfield}>
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                id="cnpj"
-                                name="cnpj"
-                                label="CNPJ"
-                                value={formik.values.cnpj}
-                                onChange={formik.handleChange}
-                                error={formik.touched.cnpj && Boolean(formik.errors.cnpj)}
-                                helperText={formik.touched.cnpj && formik.errors.cnpj}
-                                slotProps={{
-                                    input: { inputComponent: CnpjMask }
-                                }}
-                            />
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                id="nomeFantasia"
-                                name="nomeFantasia"
-                                label="Nome fantasia"
-                                value={formik.values.nomeFantasia}
-                                onChange={formik.handleChange}
-                                error={formik.touched.nomeFantasia && Boolean(formik.errors.nomeFantasia)}
-                                helperText={formik.touched.nomeFantasia && formik.errors.nomeFantasia}
-                            />
-                        </div>
-
-                        <div className={styles.formfield}>
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                id="razaoSocial"
-                                name="razaoSocial"
-                                label="Razão social"
-                                value={formik.values.razaoSocial}
-                                onChange={formik.handleChange}
-                                error={formik.touched.razaoSocial && Boolean(formik.errors.razaoSocial)}
-                                helperText={formik.touched.razaoSocial && formik.errors.razaoSocial}
-                            />
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                id="capitalSocial"
-                                name="capitalSocial"
-                                label="Capital social"
-                                value={formik.values.capitalSocial}
-                                onChange={formik.handleChange}
-                                error={formik.touched.capitalSocial && Boolean(formik.errors.capitalSocial)}
-                                helperText={formik.touched.capitalSocial && formik.errors.capitalSocial}
-                                slotProps={{
-                                input: { inputComponent: CurrencyMask }
-                            }}
-                            />
-                        </div>
-
-                        <TextField 
-                            fullWidth 
-                            margin="normal" 
-                            id="atividadesExercidas" 
-                            name="atividadesExercidas" 
-                            label="Atividades exercidas"
-                            value={formik.values.atividadesExercidas} 
-                            onChange={formik.handleChange}
-                            error={formik.touched.atividadesExercidas && Boolean(formik.errors.atividadesExercidas)}
-                            helperText={formik.touched.atividadesExercidas && formik.errors.atividadesExercidas} 
-                        />
-
-                        <TextField 
-                            fullWidth 
-                            margin="normal" 
-                            id="cep" 
-                            name="cep" 
-                            label="CEP"
-                            value={formik.values.cep} 
-                            onChange={(e) => {
-                                formik.handleChange(e);
-                                fetchAddress(e.target.value);
-                            }}
-                            error={formik.touched.cep && Boolean(formik.errors.cep)}
-                            helperText={formik.touched.cep && formik.errors.cep} />
-
-                        <div className={styles.formfield}>
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                id="endereco"
-                                name="endereco"
-                                label="Endereço"
-                                value={formik.values.endereco}
-                                onChange={formik.handleChange}
-                                error={formik.touched.endereco && Boolean(formik.errors.endereco)}
-                                helperText={formik.touched.endereco && formik.errors.endereco}
-                            />
-                            <TextField
-                                margin="normal"
-                                id="numeroEmpresa"
-                                name="numeroEmpresa"
-                                label="Número"
-                                value={formik.values.numeroEmpresa}
-                                onChange={formik.handleChange}
-                                error={formik.touched.numeroEmpresa && Boolean(formik.errors.numeroEmpresa)}
-                                helperText={formik.touched.numeroEmpresa && formik.errors.numeroEmpresa}
-                            />
-
-                            <TextField 
-                                fullWidth 
-                                margin="normal" 
-                                id="complementoEmpresa" 
-                                name="complementoEmpresa" 
-                                label="Complemento"
-                                value={formik.values.complementoEmpresa} 
-                                onChange={formik.handleChange} 
-                            />
-                        </div>
-
-                        <div className={styles.formfield}>
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                id="emailEmpresa"
-                                name="emailEmpresa"
-                                label="Email da empresa"
-                                value={formik.values.emailEmpresa}
-                                onChange={formik.handleChange}
-                                error={formik.touched.emailEmpresa && Boolean(formik.errors.emailEmpresa)}
-                                helperText={formik.touched.emailEmpresa && formik.errors.emailEmpresa}
-                            />
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                id="telefoneEmpresa"
-                                name="telefoneEmpresa"
-                                label="Telefone da empresa"
-                                value={formik.values.telefoneEmpresa}
-                                onChange={formik.handleChange}
-                                error={formik.touched.telefoneEmpresa && Boolean(formik.errors.telefoneEmpresa)}
-                                helperText={formik.touched.telefoneEmpresa && formik.errors.telefoneEmpresa}
-                                slotProps={{
-                                    input: { inputComponent: PhoneMask }
-                                }}
-                            />
-                        </div>
-
-                        <Divider style={{ margin: '10px' }}/>
-                        <p>Caso possua, informe o nome dos sócios.</p>
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            id="socios"
-                            name="socios"
-                            label="Nome dos sócios"
-                            value={formik.values.socios}
-                            onChange={formik.handleChange}
-                            error={formik.touched.socios && Boolean(formik.errors.socios)}
-                            helperText={formik.touched.socios && formik.errors.socios}
-                        />
-                        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', gap: 10 }}>
-                            <Button variant='contained' onClick={handleBack} className={styles.backButton}>
-                            Voltar
-                            </Button>
-                            <Button variant="contained" type="submit" disabled={formik.isSubmitting} className={styles.sendButton}>
-                            {formik.isSubmitting ? 'Enviando...' : 'Cadastrar'}
-                            </Button>
-                        </Box>
-                    </>
-                )}
-                </motion.div>
-            )}
-            </AnimatePresence>
-        </form>
-        </Box>
+        </Paper>
     );
 }

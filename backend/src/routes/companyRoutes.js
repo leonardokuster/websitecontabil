@@ -6,7 +6,7 @@ const companyRoutes = express.Router();
 
 companyRoutes
     .post("/register", authMiddleware(), CompanyController.criarEmpresa)
-    .get("/:id", authMiddleware(), CompanyController.buscarEmpresa)
+    .get("/user/:userId", authMiddleware(["admin", "collaborator", "user"]), CompanyController.buscarEmpresa) 
     .put("/:id", authMiddleware(), CompanyController.editarEmpresa)
     .delete("/:id", authMiddleware(), CompanyController.removerEmpresa);
 

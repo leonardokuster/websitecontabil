@@ -13,25 +13,9 @@
     cursor: pointer;
 }
 
-.elementos {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 15px;
-    gap: 10px;
-}
 
-.bttn {
-    background-color: var(--cordestaque) !important;
-    color: white !important;
-    width: 100%;
-}
 
-.bttn:hover {
-    background-image: var(--corhover);
-    color: white;
-}
+
 
 .secondBttn {
     color: var(--cordestaque) !important;

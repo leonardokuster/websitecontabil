@@ -17,10 +17,8 @@ export default function Contact() {
                 
                 <Grid item size={{ xs: 12, md: 6 }}>
                 <Box >
-                    <Typography variant="h5" component="h2" gutterBottom>
-                    Preencha o formulário abaixo que entraremos em contato com você!
-                    </Typography>
                     <ContactForm 
+                        title="Preencha o formulário abaixo que entraremos em contato com você!"
                         showSecondTextField={false}
                         showSecondButton={{ enabled: true, link: "/services", target: "_self" }}
                         secondButtonText="Conheça todos os serviços"

@@ -16,3 +16,7 @@
   --corhover: #24305f;
   --corfundo: #BCCCD9;
 }
+
+html, body {
+  overflow-x: hidden;
+}

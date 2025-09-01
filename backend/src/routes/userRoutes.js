@@ -6,7 +6,8 @@ const userRoutes = express.Router();
 
 userRoutes
     .post('/login', UserController.logarUsuario)
-    .post('/register', UserController.cadastrarUsuario);
+    .post('/register', UserController.cadastrarUsuario)
+    .post('/logout', UserController.logout);
 
 userRoutes
     .get("/", authMiddleware(["admin", "collaborator"]), UserController.listarUsuarios)

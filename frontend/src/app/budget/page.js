@@ -21,10 +21,8 @@ export default function Budget() {
             <Grid container spacing={4} sx={{ p: 4 }} alignItems="center" justifyContent="center">
                 <Grid item size={{ xs: 12, md: 6 }} >
                     <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
-                    <Typography variant="h4" component="h1" gutterBottom>
-                        {budgetData.formTitle}
-                    </Typography>
                     <ContactForm 
+                        title="Solicite agora seu orçamento!"
                         showSecondTextField={true}
                         showSecondButton={{ enabled: true, link: "https://wa.me/5551999947374", target: "_blank" }}
                         secondButtonText="Ou fale por Whatsapp"

@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation'; 
 import { useFormik } from "formik";
-import { TextField, Grid, Box, Typography, Button } from '@mui/material';
+import { TextField, Grid, Box, Typography, Button, Paper } from '@mui/material';
 import * as yup from 'yup';
-import styles from '@/components/form/loginForm/loginForm.module.css';
 import axios from 'axios';
 import { motion } from "framer-motion";
+import Cookies from 'js-cookie';
 
 const validationSchema = yup.object({
     emailPessoal: yup
@@ -33,18 +33,18 @@ export default function LoginForm() {
         onSubmit: async (values, { resetForm }) => {
             try {
                 const response = await axios.post('http://localhost:3001/user/login', values, {
+                    withCredentials: true,
                     headers: { 'Content-Type': 'application/json' },
                 });
-                const { token, usuario } = response.data;
+                const { usuario, token } = response.data;
 
-                localStorage.setItem('token', token);
-                localStorage.setItem('nome', usuario.nome);
-                localStorage.setItem('tipo', usuario.tipo);
-                localStorage.setItem('usuario_id', usuario.id);
-                
+                Cookies.set('nome', usuario.nome, { secure: true, sameSite: 'strict' });
+                Cookies.set('tipo', usuario.tipo, { secure: true, sameSite: 'strict' });
+                Cookies.set('usuario_id', usuario.id, { secure: true, sameSite: 'strict' });  
 
                 console.log(`ID do usuário: ${usuario.id}`);
                 console.log(`ID da empresa: ${usuario.empresa_id || 'Nenhuma empresa associada'}`);
+                console.log(`Token do usuário: ${token}`);
                 resetForm();
                 
                 router.push('/dashboard');              
@@ -68,59 +68,69 @@ export default function LoginForm() {
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0, x: -100 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className={styles.loginform}
-        >
-            <Typography variant="h5" component="h2" className={styles.title}>
-                Seja bem-vindo(a) ao portal do cliente!
-            </Typography>
-            <Box component="form" onSubmit={formik.handleSubmit} className={styles.form}>
-                <Grid container spacing={2}>
-                    <Grid item size={12}>
-                        <TextField
-                            fullWidth
-                            id="emailPessoal"
-                            name="emailPessoal"
-                            label="E-mail"
-                            autoComplete="email"
-                            variant="standard"
-                            value={formik.values.emailPessoal}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.emailPessoal && Boolean(formik.errors.emailPessoal)}
-                            helperText={formik.touched.emailPessoal && formik.errors.emailPessoal}
-                        />
+        <Paper elevation={3} sx={{ p: 4, maxWidth: 800, mx: 'auto' }}>
+            <motion.div
+                initial={{ opacity: 0, x: -100 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+            >
+                <Typography variant="h5" component="h2" align="center">
+                    Seja bem-vindo(a) ao portal do cliente!
+                </Typography>
+                <Box component="form" onSubmit={formik.handleSubmit} >
+                    <Grid container spacing={2}>
+                        <Grid item size={12}>
+                            <TextField
+                                fullWidth
+                                id="emailPessoal"
+                                name="emailPessoal"
+                                label="E-mail"
+                                autoComplete="email"
+                                variant="standard"
+                                value={formik.values.emailPessoal}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.emailPessoal && Boolean(formik.errors.emailPessoal)}
+                                helperText={formik.touched.emailPessoal && formik.errors.emailPessoal}
+                            />
+                        </Grid>
+                        <Grid item size={12}>
+                            <TextField
+                                fullWidth
+                                id="senha"
+                                name="senha"
+                                label="Senha"
+                                variant="standard"
+                                autoComplete="password"
+                                type="password"
+                                value={formik.values.senha}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.senha && Boolean(formik.errors.senha)}
+                                helperText={formik.touched.senha && formik.errors.senha}
+                            />
+                        </Grid>
+                        <Grid item size={12}>
+                            {renderErrorMessage()}
+                        </Grid>
+                        <Grid item size={12}>
+                            <Button
+                                variant="contained"
+                                fullWidth
+                                type="submit"
+                                sx={{
+                                    bgcolor: 'var(--cordestaque)',
+                                    '&:hover': {
+                                        bgcolor: 'var(--corhover)',
+                                    },
+                                }}
+                            >
+                                Entrar
+                            </Button>
+                        </Grid>
                     </Grid>
-                    <Grid item size={12}>
-                        <TextField
-                            fullWidth
-                            id="senha"
-                            name="senha"
-                            label="Senha"
-                            variant="standard"
-                            autoComplete="password"
-                            type="password"
-                            value={formik.values.senha}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.senha && Boolean(formik.errors.senha)}
-                            helperText={formik.touched.senha && formik.errors.senha}
-                        />
-                    </Grid>
-                    <Grid item size={12}>
-                        {renderErrorMessage()}
-                    </Grid>
-  
-                    <Grid item size={12}>
-                        <Button variant="contained" fullWidth type="submit" className={styles.bttn}>
-                            Entrar
-                        </Button>
-                    </Grid>
-                </Grid>
-            </Box>
-        </motion.div>
+                </Box>
+            </motion.div>
+        </Paper>
     );
 }

@@ -17,11 +17,11 @@ class CompanyController {
 
   static async buscarEmpresa(req, res) {
     try {
-      const { id } = req.params;
-      const empresa = await companyService.buscarEmpresa(id);
-      return res.status(200).json(empresa);
+        const { userId } = req.params;
+        const empresa = await companyService.buscarEmpresa(userId); 
+        return res.status(200).json(empresa);
     } catch (error) {
-      return res.status(404).json({ error: error.message });
+        return res.status(404).json({ error: error.message });
     }
   }
 

@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Stack } from '@mui/material';
+import { Divider, Stack } from '@mui/material';
 import ButtonComponent from '@/components/button/Button';
 import FeedbackCard from '@/components/card/Card';
 import Carousel from '@/components/carousel/Carousel';
@@ -9,7 +9,8 @@ import ContactForm from '@/components/form/contactForm/ContactForm';
 import SignupForm from '@/components/form/signupForm/SignupForm';
 import BackToTopButton from '@/components/backToTop/backToTopButton';
 import ResponsiveTabs from '@/components/responsiveTabs/ResponsiveTabs';
-
+import RelativeForm from '@/app/dashboard/components/form/dependentForm';
+import CompanyForm from '../dashboard/components/form/companyForm';
 
 export default function Page() {
     return (
@@ -55,6 +56,9 @@ export default function Page() {
             </div>
             <BackToTopButton />
             <ResponsiveTabs />
+            <RelativeForm />
+            <Divider />
+            <CompanyForm />
         </>
     );
 }

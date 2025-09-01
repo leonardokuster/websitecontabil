@@ -1,7 +1,5 @@
 import React from "react";
 import ConditionalLayout from "@/components/conditionalLayout/conditionalLayout";
-import Header from "@/components/header/Header";
-import Footer from "@/components/footer/Footer";
 import '@/styles/globals.css';
 import Wrapper from "@/app/wrapper";
 

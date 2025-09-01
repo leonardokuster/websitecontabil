@@ -54,13 +54,13 @@ class CompanyService {
         return novaEmpresa;   
     }
 
-    async buscarEmpresa(id) {
-        const empresa = await database.Company.findByPk(id, {
-        include: [{ model: database.User, as: "user", attributes: ["id", "nome", "emailPessoal"] }],
-        });
+    async buscarEmpresa(userId) {
+        const empresa = await database.Company.findOne({
+            where: { userId }
+        })
 
         if (!empresa) {
-        throw new Error("Empresa não encontrada");
+            return null;
         }
 
         return empresa;

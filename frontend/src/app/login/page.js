@@ -26,12 +26,8 @@ export default function Login() {
                 p: 4
             }}
         >
-            <Grid container spacing={{ xs: 4, md: 8 }} alignItems="center" justifyContent="center">
-
-                <Grid 
-                  item 
-                  size={{ xs: 12, md: showLoginForm ? 6 : 12 }}
-                >
+            <Grid container spacing={2} alignItems="center" justifyContent="center">
+                <Grid item size={{ xs: 12, md: showLoginForm ? 6 : 10 }}>
                     <Box sx={{ mx: 'auto', textAlign: 'center' }}>
                         {showLoginForm ? <LoginForm /> : <SignupForm />}
                         <Typography variant="body2" sx={{ mt: 2 }}>

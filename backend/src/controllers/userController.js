@@ -11,6 +11,13 @@ class UserController {
             const { emailPessoal, senha } = req.body;
             const { usuario, token, companyId } = await userService.logarUsuario({ emailPessoal, senha });
 
+            res.cookie("token", token, {
+                httpOnly: true,   // impede acesso via JS (XSS)
+                secure: process.env.NODE_ENV === "production", // só https em prod
+                sameSite: "strict",
+                maxAge: 1000 * 60 * 60, // 1h
+            });
+
             return res.status(200).json({ usuario, token, companyId });
         } catch (error) {
             return res.status(400).json({ error: error.message });
@@ -84,6 +91,23 @@ class UserController {
             return res.status(200).json(usuario);
         } catch (error) {
             return res.status(400).json({ error: error.message });
+        }
+    }
+
+    static async logout(req, res) {
+        try {
+            await userService.logout();
+
+            res.clearCookie('token', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                path: '/', 
+            });
+
+            return res.status(200).json({ message: 'Logout realizado com sucesso!' });
+        } catch (error) {
+            return res.status(500).json({ error: 'Erro ao tentar fazer logout' });
         }
     }
 }
