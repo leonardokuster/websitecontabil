@@ -57,12 +57,6 @@ class EmployeeService {
       throw new Error('Empresa não encontrada');
     }
 
-    if (userType !== 'admin' && userType !== 'collaborator') {
-      if (empresa.userId !== userId) {
-        throw new Error('Acesso negado. Você não tem permissão para adicionar funcionários a esta empresa.');
-      }
-    }
-
     const funcionario = await database.Employee.create({
       id: uuidv4(),
       nome,

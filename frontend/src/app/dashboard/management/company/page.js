@@ -7,6 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useRouter, useSearchParams } from 'next/navigation'; 
 import Link from 'next/link';
 import Cookies from 'js-cookie';
@@ -236,7 +237,7 @@ export default function CompanyList() {
                                                     <Typography variant='body2' component='div' m={2}>
                                                         <>
                                                             Deseja visualizar ou cadastrar um novo funcionário?
-                                                            <Link href={`/dashboard/management/employee?companyId=${company.id}`}> <strong>Clique aqui</strong></Link>
+                                                            <Link href={`/dashboard/management/employee?companyId=${company.id}&userId=${urlUserId}`}> <strong>Clique aqui</strong></Link>
                                                         </>
                                                     </Typography>
                                                 </Collapse>
@@ -267,6 +268,24 @@ export default function CompanyList() {
                         </Button>
                     </DialogActions>
                 </Dialog>
+
+                {(userType === 'admin' || userType === 'collaborator') && (
+                    <Button 
+                        href={`/dashboard/management/user`}
+                        sx={{
+                            bgcolor: 'var(--cordestaque)',
+                            color: 'white',
+                            width: '10px',
+                            borderRadius: '50px',
+                            mt: '20px',
+                            '&:hover': {
+                                bgcolor: 'var(--corhover)',
+                            },
+                        }}
+                    >
+                        <ArrowBackIcon/>
+                    </Button>
+                )}
             </Paper>
         </Container>
     )
