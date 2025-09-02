@@ -148,10 +148,10 @@ export default function CompanyEditPage() {
     }
 
     const handleCancel = () => {
-        const path = (loggedInUserType === 'admin' && redirectUserId)
-            ? `/dashboard/management/company?userId=${redirectUserId}`
+        const redirectPath = userIdFromUrl 
+            ? `/dashboard/management/company?userId=${userIdFromUrl}` 
             : '/dashboard/management/company';
-        router.push(path);
+        router.push(redirectPath);
     };
 
     return (

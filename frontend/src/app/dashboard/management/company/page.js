@@ -153,7 +153,7 @@ export default function CompanyList() {
                                                     <IconButton
                                                         aria-label='Editar empresa'
                                                         size='small'
-                                                        href={`/dashboard/management/company/edit?companyId=${company.id}`}
+                                                        href={`/dashboard/management/company/edit?companyId=${company.id}&userId=${urlUserId}`}
                                                     >
                                                         <EditIcon />
                                                     </IconButton>
