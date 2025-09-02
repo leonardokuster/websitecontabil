@@ -25,6 +25,20 @@ class CompanyController {
     }
   }
 
+  static async buscarEmpresaPorId(req, res) {
+    try {
+      const { id } = req.params;
+      const empresa = await companyService.buscarEmpresaPorId(id);
+
+      if (!empresa) {
+        return res.status(404).json({ message: 'Empresa não encontrada.'});
+      }
+      res.status(200).json(empresa);
+    } catch (error) {
+      return res.status(404).json({ error: error.message });
+    }
+  }
+
   static async editarEmpresa(req, res) {
     try {
       const { id } = req.params;

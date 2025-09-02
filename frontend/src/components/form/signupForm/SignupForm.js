@@ -24,7 +24,6 @@ const personalSchema = yup.object({
     emailPessoal: yup
         .string('Isira seu e-mail')
         .email('Insira um e-mail válido')
-        .matches(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i, 'Insira um e-mail válido')
         .required('Campo obrigatório'),
     dataNascimento: yup
         .string()
@@ -112,6 +111,8 @@ const companySchema = yup.object({
             is: true,
             then: (schema) => schema.required('Número é obrigatório')
         }),
+    complementoEmpresa: yup
+        .string(),
     emailEmpresa: yup
         .string()
         .when('possuiEmpresa', {
@@ -124,7 +125,7 @@ const companySchema = yup.object({
             is: true,
             then: (schema) => schema.required('Telefone da empresa é obrigatório')
         }),
-    nomeSocios: yup
+    socios: yup
         .string(),
 });
 

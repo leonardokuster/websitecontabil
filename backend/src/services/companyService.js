@@ -66,6 +66,16 @@ class CompanyService {
         return empresa;
     }
 
+    async buscarEmpresaPorId(id) {
+        const empresa = await database.Company.findByPk(id);
+
+        if (!empresa) {
+            return null;
+        }
+
+        return empresa;
+    }
+
     async editarEmpresa(id, dados) {
         const empresa = await database.Company.findByPk(id);
         if (!empresa) {
