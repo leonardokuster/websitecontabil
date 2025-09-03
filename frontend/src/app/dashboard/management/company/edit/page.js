@@ -22,7 +22,6 @@ const getLoggedInUserType = () => {
     return Cookies.get('tipo');
 };
 
-
 export default function CompanyEditPage() {
     const router = useRouter();
     const searchParams = useSearchParams();

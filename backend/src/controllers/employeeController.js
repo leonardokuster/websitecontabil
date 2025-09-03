@@ -52,6 +52,20 @@ class EmployeeController {
       return res.status(400).json({ error: error.message });
     }
   }
+
+  static async buscarFuncionarioPorId(req, res) {
+    try {
+      const { id } = req.params;
+      const funcionario = await employeeService.buscarFuncionarioPorId(id);
+
+      if (!funcionario) {
+        return res.status(404).json({ message: 'Funcionário não encontrado.'});
+      }
+      res.status(200).json(funcionario);
+    } catch (error) {
+      return res.status(404).json({ error: error.message });
+    }
+  }
 }
 
 export default EmployeeController;

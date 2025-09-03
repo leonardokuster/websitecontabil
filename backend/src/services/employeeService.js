@@ -133,6 +133,16 @@ class EmployeeService {
 
     return funcionarios;
   }
+
+  async buscarFuncionarioPorId(id) {
+          const funcionario = await database.Employee.findByPk(id);
+  
+          if (!funcionario) {
+              return null;
+          }
+  
+          return funcionario;
+      }
 }
 
 export default EmployeeService;

@@ -10,6 +10,8 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useRouter, useSearchParams } from 'next/navigation'; 
 import Link from 'next/link';
+import { format, parse } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 export default function EmployeeList() {
     const router = useRouter();
@@ -172,7 +174,7 @@ export default function EmployeeList() {
                                                             </Grid>
                                                             <Grid item size={{ xs: 12, md: 4 }}>
                                                                 <Typography variant='subtitle2' color='text.secondary'>Nascimento</Typography>
-                                                                <Typography>{employee.dataNascimento}</Typography>
+                                                                <Typography>{format(parse(employee.dataNascimento, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy', { locale: ptBR })}</Typography>
                                                             </Grid>
                                                             <Grid item size={{ xs: 12, md: 4 }}>
                                                                 <Typography variant='subtitle2' color='text.secondary'>Local nascimento</Typography>
@@ -192,7 +194,7 @@ export default function EmployeeList() {
                                                             </Grid>
                                                             <Grid item size={{ xs: 12, md: 4 }}>
                                                                 <Typography variant='subtitle2' color='text.secondary'>Data emissão</Typography>
-                                                                <Typography>{employee.dataRg}</Typography>
+                                                                <Typography>{format(parse(employee.dataRg, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy', { locale: ptBR })}</Typography>
                                                             </Grid>
                                                             <Grid item size={{ xs: 12, md: 4 }}>
                                                                 <Typography variant='subtitle2' color='text.secondary'>CEP</Typography>
@@ -256,7 +258,7 @@ export default function EmployeeList() {
                                                             </Grid>
                                                             <Grid item size={{ xs: 12, md: 4 }}>
                                                                 <Typography variant='subtitle2' color='text.secondary'>Data</Typography>
-                                                                <Typography>{employee.dataCt}</Typography>
+                                                                <Typography>{format(parse(employee.dataCt, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy', { locale: ptBR })}</Typography>
                                                             </Grid>
                                                             <Grid item size={{ xs: 12, md: 4 }}>
                                                                 <Typography variant='subtitle2' color='text.secondary'>Carteira digital</Typography>
@@ -280,7 +282,7 @@ export default function EmployeeList() {
                                                             </Grid>
                                                             <Grid item size={{ xs: 12, md: 4 }}>
                                                                 <Typography variant='subtitle2' color='text.secondary'>Data admissão</Typography>
-                                                                <Typography>{employee.dataAdmissao}</Typography>
+                                                                <Typography>{format(parse(employee.dataAdmissao, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy', { locale: ptBR })}</Typography>
                                                             </Grid>
                                                             <Grid item size={{ xs: 12, md: 4 }}>
                                                                 <Typography variant='subtitle2' color='text.secondary'>Salário</Typography>
