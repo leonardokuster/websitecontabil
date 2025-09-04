@@ -415,11 +415,11 @@ export default function Signup() {
                                                 onBlur={formik.handleBlur}
                                                 error={formik.touched.senha && Boolean(formik.errors.senha)}
                                                 helperText={formik.touched.senha && formik.errors.senha}
-                                                slotProps={{
+                                                InputProps={{
                                                     endAdornment: (
                                                         <InputAdornment position="end">
                                                             <IconButton
-                                                                aria-label="toggle password visibility"
+                                                                aria-label={showPassword ? 'esconder senha' : 'mostrar senha'}
                                                                 onClick={handleClickShowPassword}
                                                                 onMouseDown={handleMouseDownPassword}
                                                                 edge="end"
@@ -444,16 +444,16 @@ export default function Signup() {
                                                 onBlur={formik.handleBlur}
                                                 error={formik.touched.confisenha && Boolean(formik.errors.confisenha)}
                                                 helperText={formik.touched.confisenha && formik.errors.confisenha}
-                                                slotProps={{
+                                                InputProps={{
                                                     endAdornment: (
                                                         <InputAdornment position="end">
                                                             <IconButton
-                                                                aria-label="toggle password visibility"
+                                                                aria-label={showPassword ? 'esconder senha' : 'mostrar senha'}
                                                                 onClick={handleClickShowConfPassword}
                                                                 onMouseDown={handleMouseDownPassword}
                                                                 edge="end"
                                                             >
-                                                                {showConfPassword ? <VisibilityOff /> : <Visibility />}
+                                                                {showPassword ? <VisibilityOff /> : <Visibility />}
                                                             </IconButton>
                                                         </InputAdornment>
                                                     ),

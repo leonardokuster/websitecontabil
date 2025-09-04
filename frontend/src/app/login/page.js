@@ -3,13 +3,15 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation'; 
 import { useFormik } from "formik";
-import { TextField, Grid, Box, Typography, Button, Paper } from '@mui/material';
+import { TextField, Grid, Box, Typography, Button, Paper, InputAdornment, IconButton } from '@mui/material';
 import * as yup from 'yup';
 import axios from 'axios';
 import { motion } from "framer-motion";
 import Cookies from 'js-cookie';
 import Link from 'next/link';
 import Image from 'next/image';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const validationSchema = yup.object({
     emailPessoal: yup
@@ -24,6 +26,8 @@ const validationSchema = yup.object({
 
 export default function Login() {
     const [message, setMessage] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+
     const router = useRouter();
 
     const formik = useFormik({
@@ -67,6 +71,11 @@ export default function Login() {
 
     const renderErrorMessage = () => {
         return <h3 style={{ fontSize: '0.84em', color: '#202949', textAlign: 'left' }}>{message}</h3>;
+    };
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
     };
 
     return (
@@ -113,15 +122,29 @@ export default function Login() {
                                             fullWidth
                                             id="senha"
                                             name="senha"
+                                            type={showPassword ? 'text' : 'password'}
                                             label="Senha"
                                             variant="standard"
-                                            autoComplete="password"
-                                            type="password"
+                                            autoComplete="current-password"
                                             value={formik.values.senha}
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
                                             error={formik.touched.senha && Boolean(formik.errors.senha)}
                                             helperText={formik.touched.senha && formik.errors.senha}
+                                            InputProps={{
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            aria-label={showPassword ? 'esconder senha' : 'mostrar senha'}
+                                                            onClick={handleClickShowPassword}
+                                                            onMouseDown={handleMouseDownPassword}
+                                                            edge="end"
+                                                        >
+                                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
                                         />
                                     </Grid>
                                     <Grid item size={12}>
