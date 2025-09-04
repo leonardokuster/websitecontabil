@@ -27,16 +27,26 @@ class UserController {
     static async cadastrarUsuario(req, res) {
         try {
             const dadosDoUsuario = req.body;
-            console.log('Dados recebidos do frontend:', dadosDoUsuario);
+            console.log('Dados recebidos do frontend userController:', dadosDoUsuario);
 
             const usuario = await userService.cadastrarUsuario(dadosDoUsuario);
 
+            // Gera o token
             const token = jwt.sign(
                 { id: usuario.id, tipo: usuario.tipo },
                 userToken.secret,
                 { expiresIn: '1h' }
             );
             console.log('Token:', token);
+
+            // Seta o cookie
+            res.cookie("token", token, {
+                httpOnly: true,   
+                secure: process.env.NODE_ENV === "production", 
+                sameSite: "strict",
+                maxAge: 1000 * 60 * 60,
+            });
+
             return res.status(201).json({
                 message: 'Usuário cadastrado com sucesso!',
                 id: usuario.id,

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { useTheme, useMediaQuery, Checkbox, FormHelperText, FormControlLabel, MenuItem, Select, InputLabel, FormControl, Container, Box, CircularProgress, Alert, Typography, Button, Grid, Paper, TextField } from '@mui/material';
@@ -85,19 +85,16 @@ const validationSchema = yup.object({
     }),
 });
 
-export default function EmployeeEditPage() {
+export default function EmployeeAddPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const loggedUserId = getLoggedInUserId();
     const urlUserId = searchParams.get('userId');
     const userId = urlUserId || loggedUserId;
     const companyId = searchParams.get('companyId');
-    const employeeId = searchParams.get('employeeId');
 
-    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [originalSalario, setOriginalSalario] = useState(null);
 
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -136,6 +133,12 @@ export default function EmployeeEditPage() {
         onSubmit: async (values) => {
             setIsSubmitting(true);
             try {
+                if (!userId || !companyId) {
+                    setError('IDs de usuário e da empresa não fornecidos na URL. Não é possível cadastrar o funcionário.');
+                    setIsSubmitting(false);
+                    return;
+                }
+
                 const valuesToSend = { ...values };
 
                 if (valuesToSend.salario) {
@@ -153,71 +156,28 @@ export default function EmployeeEditPage() {
 
                 console.log('Dados a serem enviados:', valuesToSend);
 
-                await axios.put(`http://localhost:3001/users/${userId}/companies/${companyId}/employees/${employeeId}`, valuesToSend, { withCredentials: true });
+                await axios.post(`http://localhost:3001/users/${userId}/companies/${companyId}/employees`, valuesToSend, { withCredentials: true });
                 const redirectPath = `/dashboard/management/employee?companyId=${companyId}&userId=${userId}`;
                 router.push(redirectPath);
             } catch (err) {
-                console.error('Erro ao salvar funcionário:', err);
-                setError('Falha ao salvar as alterações do funcionário.');
+                console.error('Erro ao cadastrar funcionário:', err);
+                setError('Falha ao cadastrar o funcionário.');
             } finally {
                 setIsSubmitting(false);
             }
         },
     });
 
-    useEffect(() => {
-        if (!userId || !companyId || !employeeId) {
-            router.push(`/dashboard/management/company?userId=${userId}`);
-            return;
-        }
-
-        const fetchEmployee = async () => {
-            try {
-                const response = await axios.get(`http://localhost:3001/users/${userId}/companies/${companyId}/employees/${employeeId}`, { withCredentials: true });
-                const employeeData = response.data;
-                setOriginalSalario(employeeData.salario);
-
-                formik.setValues({
-                    ...employeeData,
-                    salario: employeeData.salario ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(employeeData.salario): '',
-                    dataNascimento: employeeData.dataNascimento ? format(parse(employeeData.dataNascimento, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy'): '',
-                    dataRg: employeeData.dataRg ? format(parse(employeeData.dataRg, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy'): '',
-                    dataCt: employeeData.dataCt ? format(parse(employeeData.dataCt, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy'): '',
-                    dataAdmissao: employeeData.dataAdmissao ? format(parse(employeeData.dataAdmissao, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy'): '',
-                });
-            } catch (err) {
-                console.error('Erro ao carregar dados do funcionário:', err);
-                setError('Não foi possível carregar os dados do funcionário. Tente novamente mais tarde.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchEmployee();
-    }, [userId, companyId, employeeId]);
-
     const handleCancel = () => {
         const redirectPath = `/dashboard/management/employee?companyId=${companyId}&userId=${userId}`;
         router.push(redirectPath);
     };
 
-    if (loading) {
-        return (
-            <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-                <CircularProgress />
-            </Container>
-        );
-    }
-
-    if (error) {
-        return <Alert severity="error" sx={{ mt: 4 }}>{error}</Alert>;
-    }
-
     return (
         <Container component="main" sx={{ pt: 4, pb: 4 }}>
             <Paper elevation={3} sx={{ p: 4, borderRadius: '16px' }}>
                 <Typography variant='h4' component='h1' gutterBottom align='center' mb={4}>
-                    Editar funcionário
+                    Adicionar funcionário
                 </Typography>
                 <Box component="form" onSubmit={formik.handleSubmit}>
                     <Grid container spacing={3}>
@@ -255,7 +215,7 @@ export default function EmployeeEditPage() {
                                 onBlur={formik.handleBlur} 
                                 error={formik.touched.telefone && Boolean(formik.errors.telefone)} 
                                 helperText={formik.touched.telefone && formik.errors.telefone} 
-                                slotProps={{ input: { inputComponent: PhoneMask } }} 
+                                slotProps={{ input: {inputComponent: PhoneMask} }}
                             />
                         </Grid>
                         <Grid item size={{ xs: 12, md: 6 }}>
@@ -297,11 +257,12 @@ export default function EmployeeEditPage() {
                                 label="Data nascimento"
                                 value={formik.values.dataNascimento}
                                 onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
                                 error={formik.touched.dataNascimento && Boolean(formik.errors.dataNascimento)}
                                 helperText={formik.touched.dataNascimento && formik.errors.dataNascimento}
-                                slotProps={{
+                                slotProps={{ 
                                     shrink: true,
-                                    input: { inputComponent: DateMask }
+                                    input: {inputComponent: DateMask} 
                                 }}
                             />
                         </Grid>
@@ -327,7 +288,7 @@ export default function EmployeeEditPage() {
                                 onBlur={formik.handleBlur} 
                                 error={formik.touched.cpf && Boolean(formik.errors.cpf)} 
                                 helperText={formik.touched.cpf && formik.errors.cpf} 
-                                slotProps={{ input: { inputComponent: CpfMask } }} 
+                                slotProps={{ input: {inputComponent: CpfMask} }}
                             />
                         </Grid>
                         <Grid item size={{ xs: 12, md: 6 }}>
@@ -375,9 +336,9 @@ export default function EmployeeEditPage() {
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.dataRg && Boolean(formik.errors.dataRg)}
                                 helperText={formik.touched.dataRg && formik.errors.dataRg}
-                                slotProps={{
-                                    inputLabel: { shrink: true },
-                                    input: { inputComponent: DateMask }
+                                slotProps={{ 
+                                    shrink: true,
+                                    input: {inputComponent: DateMask} 
                                 }}
                             />
                         </Grid>
@@ -589,11 +550,12 @@ export default function EmployeeEditPage() {
                                 label="Emissão CTPS"
                                 value={formik.values.dataCt}
                                 onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
                                 error={formik.touched.dataCt && Boolean(formik.errors.dataCt)}
                                 helperText={formik.touched.dataCt && formik.errors.dataCt}
-                                slotProps={{
+                                slotProps={{ 
                                     shrink: true,
-                                    input: { inputComponent: DateMask }
+                                    input: {inputComponent: DateMask} 
                                 }}
                             />
                         </Grid>
@@ -656,11 +618,12 @@ export default function EmployeeEditPage() {
                                 label="Data admissão"
                                 value={formik.values.dataAdmissao}
                                 onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
                                 error={formik.touched.dataAdmissao && Boolean(formik.errors.dataAdmissao)}
                                 helperText={formik.touched.dataAdmissao && formik.errors.dataAdmissao}
-                                slotProps={{
+                                slotProps={{ 
                                     shrink: true,
-                                    input: { inputComponent: DateMask }
+                                    input: {inputComponent: DateMask} 
                                 }}
                             />
                         </Grid>
@@ -674,7 +637,7 @@ export default function EmployeeEditPage() {
                                 onBlur={formik.handleBlur} 
                                 error={formik.touched.salario && Boolean(formik.errors.salario)} 
                                 helperText={formik.touched.salario && formik.errors.salario} 
-                                slotProps={{ input: { inputComponent: CurrencyMask } }}
+                                slotProps={{ input: {inputComponent: CurrencyMask} }}
                             />
                         </Grid>
                         <Grid item size={{ xs: 12, md: 6 }}>
@@ -760,7 +723,7 @@ export default function EmployeeEditPage() {
                                 padding: isSmallScreen ? '8px' : '6px 16px',
                             }}
                         >
-                            {isSmallScreen ? <SaveIcon /> : 'Salvar alterações'}
+                            {isSmallScreen ? <SaveIcon /> : 'Cadastrar funcionário'}
                         </Button>
                     </Box>
                 </Box>

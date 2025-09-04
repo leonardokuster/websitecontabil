@@ -22,6 +22,7 @@ class UserService {
         }
 
         const empresa = await database.Company.findOne({ where: { userId: usuario.id } });
+        const companyId = empresa ? empresa.id : null;
 
         const token = jwt.sign(
             { id: usuario.id, tipo: usuario.tipo },
@@ -30,8 +31,6 @@ class UserService {
         );
 
         const { senha: _, ...usuarioSemSenha } = usuario.toJSON();
-
-        const companyId = empresa ? empresa.id : null;
 
         return { usuario: usuarioSemSenha, token, companyId };
     }
@@ -62,7 +61,6 @@ class UserService {
             tipo: 'user',
             possuiEmpresa
         });
-
 
         const info = await transporter.sendMail({
             from: "Escritório Kuster <l.kusterr@gmail.com>",

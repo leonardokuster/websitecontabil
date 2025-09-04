@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Paper, Typography, Box, CircularProgress, Alert, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Grid, Collapse, IconButton, Tooltip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, FormControl, Select, MenuItem } from '@mui/material';
+import { useTheme, useMediaQuery, Container, Paper, Typography, Box, CircularProgress, Alert, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Grid, Collapse, IconButton, Tooltip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, FormControl, Select, MenuItem } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -12,12 +13,19 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { format, parse } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import Cookies from 'js-cookie';
+
+const getLoggedInUserId = () => Cookies.get('usuario_id');
 
 export default function EmployeeList() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const urlCompanyId = searchParams.get('companyId');
+    
+    const loggedUserId = getLoggedInUserId();
     const urlUserId = searchParams.get('userId');
+    const userId = urlUserId || loggedUserId;
+
+    const urlCompanyId = searchParams.get('companyId');
 
     const [open, setOpen] = useState(null);
     const [employees, setEmployees] = useState([]);
@@ -27,24 +35,27 @@ export default function EmployeeList() {
     const [employeeToDeleteId, setEmployeeToDeleteId] = useState(null);
     const [companyName, setCompanyName] = useState('');
 
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     useEffect(() => {
         const fetchEmployees = async () => {
             setLoading(true);
             setError(null);
 
-            if (!urlCompanyId) {
+            if (!userId || !urlCompanyId) {
                 setLoading(false);
-                setError('ID da empresa não fornecido.');
+                setError('ID da empresa ou do usuário não fornecido.');
                 return;
             }
             
             try {
-                const companyResponse = await axios.get(`http://localhost:3001/company/${urlCompanyId}`, { withCredentials: true });
+                const companyResponse = await axios.get(`http://localhost:3001/users/${userId}/companies/${urlCompanyId}`, { withCredentials: true });
                 setCompanyName(companyResponse.data.nomeFantasia || companyResponse.data.razaoSocial);
 
-                const employeeResponse = await axios.get(`http://localhost:3001/employee/company/${urlCompanyId}`, { withCredentials: true });
+                const employeeResponse = await axios.get(`http://localhost:3001/users/${userId}/companies/${urlCompanyId}/employees`, { withCredentials: true });
                 setEmployees(employeeResponse.data);
+
             } catch (err) {
                 console.error('Erro ao carregar dados:', err);
                 if (err.response && err.response.status === 404) {
@@ -57,7 +68,11 @@ export default function EmployeeList() {
             }
             };
             fetchEmployees();
-    }, [urlCompanyId]);
+    }, [userId, urlCompanyId]);
+
+    const handleAddEmployee = () => {
+        router.push(`/dashboard/management/employee/add?companyId=${urlCompanyId}&userId=${userId}`);
+    }
 
     const handleDeleteEmployee = (employeeId) => {
         setEmployeeToDeleteId(employeeId);
@@ -66,7 +81,7 @@ export default function EmployeeList() {
 
     const confirmDelete = async () => {
         try {
-            await axios.delete(`http://localhost:3001/employee/${employeeToDeleteId}`, { withCredentials: true });
+            await axios.delete(`http://localhost:3001/users/${userId}/companies/${urlCompanyId}/employees/${employeeToDeleteId}`, { withCredentials: true });
             setEmployees(employees.filter(c => c.id !== employeeToDeleteId));
             setIsDeleteDialogOpen(false);
             setEmployeeToDeleteId(null);
@@ -74,6 +89,11 @@ export default function EmployeeList() {
             console.error('Erro ao remover funcionário:', err);
             setError('Falha ao remover o funcionário.');
         }
+    };
+
+    const handleBack = () => {
+        const backPath = `/dashboard/management/company?userId=${userId}`;
+        router.push(backPath);
     };
 
     if (loading) {
@@ -95,14 +115,7 @@ export default function EmployeeList() {
                     Gerenciamento de funcionários de {companyName}
                 </Typography>
                 {employees.length === 0 ? (
-                    <>
-                        <Typography color='text-secondary' align='center'>Esta empresa não possui funcionários cadastrados.</Typography>
-                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                            <Button variant="contained" onClick={() => router.push(`/dashboard/management/company/add?companyId=${urlCompanyId}&userId=${urlUserId}`)}>
-                                Cadastrar funcionário
-                            </Button>
-                        </Box>
-                    </>
+                    <Typography color='text-secondary' align='center'>Esta empresa não possui funcionários cadastrados.</Typography>
                 ) : (
                     <TableContainer sx={{ overflowX: "hidden" }}>
                         <Table aria-label='Tabela de funcionários cadastrados'>
@@ -134,7 +147,7 @@ export default function EmployeeList() {
                                                     <IconButton
                                                         aria-label='Editar funcionário'
                                                         size='small'
-                                                        href={`/dashboard/management/employee/edit?employeeId=${employee.id}&companyId=${urlCompanyId}&userId=${urlUserId}`}
+                                                        href={`/dashboard/management/employee/edit?employeeId=${employee.id}&companyId=${urlCompanyId}&userId=${userId}`}
                                                     >
                                                         <EditIcon />
                                                     </IconButton>
@@ -321,7 +334,7 @@ export default function EmployeeList() {
                                                     <Typography variant='body2' component='div' m={2}>
                                                         <>
                                                             Deseja visualizar ou cadastrar um novo dependente?
-                                                            <Link href={`/dashboard/management/dependent?employeeId=${employee.id}`}> <strong>Clique aqui</strong></Link>
+                                                            <Link href={`/dashboard/management/dependent?employeeId=${employee.id}&companyId=${urlCompanyId}&userId=${userId}`}> <strong>Clique aqui</strong></Link>
                                                         </>
                                                     </Typography>
                                                 </Collapse>
@@ -352,39 +365,43 @@ export default function EmployeeList() {
                         </Button>
                     </DialogActions>
                 </Dialog>
-                {urlUserId && urlUserId !== 'null' ? (
-                    <Button 
-                        href={`/dashboard/management/company?userId=${urlUserId}`}
+                <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'space-between' }}>
+                    <Button
+                        onClick={handleBack}
                         sx={{
-                            bgcolor: 'var(--cordestaque)',
-                            color: 'white',
+                            color: 'var(--cordestaque)',
+                            bgcolor: 'white',
+                            border: '1px solid var(--cordestaque)',
                             width: '10px',
-                            borderRadius: '50px',
                             mt: '20px',
                             '&:hover': {
                                 bgcolor: 'var(--corhover)',
                             },
+                            borderRadius: isSmallScreen ? '50px' : 'none',
+                            minWidth: isSmallScreen ? '80px' : '150px',
+                            padding: isSmallScreen ? '8px' : '6px 16px',
                         }}
                     >
-                        <ArrowBackIcon/>
+                        {isSmallScreen ? <ArrowBackIcon /> : 'Voltar'}
                     </Button>
-                ) : (
-                    <Button 
-                        href={`/dashboard/management/company`}
+                    <Button
+                        onClick={handleAddEmployee}
+                        variant='contained'
                         sx={{
                             bgcolor: 'var(--cordestaque)',
                             color: 'white',
-                            width: '10px',
-                            borderRadius: '50px',
                             mt: '20px',
                             '&:hover': {
                                 bgcolor: 'var(--corhover)',
                             },
+                            borderRadius: isSmallScreen ? '50px' : 'none',
+                            minWidth: isSmallScreen ? '80px' : '150px',
+                            padding: isSmallScreen ? '8px' : '6px 16px',
                         }}
                     >
-                        <ArrowBackIcon/>
+                        {isSmallScreen ? <AddIcon /> : 'Adicionar funcionário'}
                     </Button>
-                )}
+                </Box>
             </Paper>
         </Container>
     )

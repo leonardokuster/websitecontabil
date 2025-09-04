@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
-import { useTheme, useMediaQuery, Checkbox, FormHelperText, FormControlLabel, MenuItem, Select, InputLabel, FormControl, Container, Box, CircularProgress, Alert, Typography, Button, Grid, Paper, TextField } from '@mui/material';
-import SaveIcon from '@mui/icons-material/Save';
+import { useTheme, useMediaQuery, FormHelperText, Container, Box, CircularProgress, Alert, Typography, Button, Grid, Paper, TextField } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -39,7 +39,7 @@ const validationSchema = yup.object({
     cpfDependente: yup.string('CPF').required('Campo obrigatório'),
 });
 
-export default function DependentEditPage() {
+export default function DependentAddPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     
@@ -49,9 +49,7 @@ export default function DependentEditPage() {
 
     const companyId = searchParams.get('companyId');
     const employeeId = searchParams.get('employeeId');
-    const dependentId = searchParams.get('dependentId');
 
-    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -63,12 +61,19 @@ export default function DependentEditPage() {
             nomeDependente: '',
             dataNascimentoDependente: '',
             cpfDependente: '',
-            localNascimentoDependente: ''
+            localNascimentoDependente: '',
+            employeeId: employeeId, 
         },
         validationSchema: validationSchema,
         onSubmit: async (values) => {
             setIsSubmitting(true);
             try {
+                if (!userId || !companyId || !employeeId) {
+                    setError('IDs de usuário, empresa ou funcionário não fornecidos na URL. Não é possível cadastrar o dependente.');
+                    setIsSubmitting(false);
+                    return;
+                }
+
                 const valuesToSend = { ...values };
 
                 if (valuesToSend.dataNascimentoDependente) {
@@ -78,66 +83,29 @@ export default function DependentEditPage() {
 
                 console.log('Dados a serem enviados:', valuesToSend);
 
-                await axios.put(`http://localhost:3001/users/${userId}/companies/${companyId}/employees/${employeeId}/dependents/${dependentId}`, valuesToSend, { withCredentials: true });
+                await axios.post(`http://localhost:3001/users/${userId}/companies/${companyId}/employees/${employeeId}/dependents`, valuesToSend, { withCredentials: true });
+
                 const redirectPath = `/dashboard/management/dependent?employeeId=${employeeId}&companyId=${companyId}&userId=${userId}`;
                 router.push(redirectPath);
             } catch (err) {
-                console.error('Erro ao salvar dependente:', err);
-                setError('Falha ao salvar as alterações do dependente.');
+                console.error('Erro ao cadastrar dependente:', err);
+                setError('Falha ao cadastrar o dependente.');
             } finally {
                 setIsSubmitting(false);
             }
         },
     });
 
-    useEffect(() => {
-        if (!userId || !companyId || !employeeId || !dependentId) {
-            router.push(`/dashboard/management/employee?companyId=${companyId}&userId=${userId}`);
-            return;
-        }
-
-        const fetchDependent = async () => {
-            try {
-                const response = await axios.get(`http://localhost:3001/users/${userId}/companies/${companyId}/employees/${employeeId}/dependents/${dependentId}`, { withCredentials: true });
-                const dependentData = response.data;
-
-                formik.setValues({
-                    ...dependentData,
-                    dataNascimentoDependente: dependentData.dataNascimentoDependente ? format(parse(dependentData.dataNascimentoDependente, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy'): '',
-                });
-            } catch (err) {
-                console.error('Erro ao carregar dados do dependente:', err);
-                setError('Não foi possível carregar os dados do dependente. Tente novamente mais tarde.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchDependent();
-    }, [userId, companyId, employeeId, dependentId]);
-
     const handleCancel = () => {
         const redirectPath = `/dashboard/management/dependent?employeeId=${employeeId}&companyId=${companyId}&userId=${userId}`;
         router.push(redirectPath);
     };
 
-    if (loading) {
-        return (
-            <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-                <CircularProgress />
-            </Container>
-        );
-    }
-
-    if (error) {
-        return <Alert severity="error" sx={{ mt: 4 }}>{error}</Alert>;
-    }
-
     return (
         <Container component="main" sx={{ pt: 4, pb: 4 }}>
             <Paper elevation={3} sx={{ p: 4, borderRadius: '16px' }}>
                 <Typography variant='h4' component='h1' gutterBottom align='center' mb={4}>
-                    Editar dependente
+                    Adicionar dependente
                 </Typography>
                 <Box component="form" onSubmit={formik.handleSubmit}>
                     <Grid container spacing={3}>
@@ -153,7 +121,6 @@ export default function DependentEditPage() {
                                 helperText={formik.touched.nomeDependente && formik.errors.nomeDependente} 
                             />
                         </Grid>
-        
                         <Grid item size={{ xs: 12, md: 6 }}>
                             <TextField
                                 fullWidth
@@ -161,12 +128,11 @@ export default function DependentEditPage() {
                                 label="Data nascimento"
                                 value={formik.values.dataNascimentoDependente}
                                 onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
                                 error={formik.touched.dataNascimentoDependente && Boolean(formik.errors.dataNascimentoDependente)}
                                 helperText={formik.touched.dataNascimentoDependente && formik.errors.dataNascimentoDependente}
-                                slotProps={{
-                                    shrink: true,
-                                    input: { inputComponent: DateMask }
-                                }}
+                                InputProps={{ inputComponent: DateMask }}
+                                InputLabelProps={{ shrink: true }}
                             />
                         </Grid>
                         <Grid item size={{ xs: 12, md: 6 }}>
@@ -191,7 +157,7 @@ export default function DependentEditPage() {
                                 onBlur={formik.handleBlur} 
                                 error={formik.touched.cpfDependente && Boolean(formik.errors.cpfDependente)} 
                                 helperText={formik.touched.cpfDependente && formik.errors.cpfDependente} 
-                                slotProps={{ input: { inputComponent: CpfMask } }} 
+                                InputProps={{ inputComponent: CpfMask }}
                             />
                         </Grid>
                     </Grid>
@@ -231,7 +197,7 @@ export default function DependentEditPage() {
                                 padding: isSmallScreen ? '8px' : '6px 16px',
                             }}
                         >
-                            {isSmallScreen ? <SaveIcon /> : 'Salvar alterações'}
+                            {isSmallScreen ? <AddIcon /> : 'Adicionar dependente'}
                         </Button>
                     </Box>
                 </Box>

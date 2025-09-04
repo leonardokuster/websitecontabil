@@ -2,26 +2,27 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Paper, Typography, Box, CircularProgress, Alert, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Grid, Collapse, IconButton, Tooltip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, FormControl, Select, MenuItem } from '@mui/material';
+import { useTheme, useMediaQuery, Container, Paper, Typography, Box, CircularProgress, Alert, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Grid, Collapse, IconButton, Tooltip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, FormControl, Select, MenuItem } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import AddIcon from '@mui/icons-material/Add';
 import { useRouter, useSearchParams } from 'next/navigation'; 
 import Link from 'next/link';
 import Cookies from 'js-cookie';
 
-const getLoggedInUserId = () => {
-    return Cookies.get('usuario_id');
-};
+const getLoggedInUserId = () => Cookies.get('usuario_id');
+const getLoggedInUserType = () => Cookies.get('tipo');
 
 export default function CompanyList() {
     const router = useRouter();
+
     const searchParams = useSearchParams();
-    const urlUserId = searchParams.get('userId');
     const loggedInUserId = getLoggedInUserId();
-    const currentUserId = urlUserId || loggedInUserId;
+    const urlUserId = searchParams.get('userId');
+    const userId = urlUserId || loggedInUserId;
 
     const [open, setOpen] = useState(null);
     const [companies, setCompanies] = useState([]);
@@ -32,36 +33,29 @@ export default function CompanyList() {
     const [userName, setUserName] = useState('');
     const [userType, setUserType] = useState('');
 
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     useEffect(() => {
         const fetchCompanies = async () => {
             setLoading(true);
             setError(null);
 
-            if (!currentUserId) {
+            if (!userId) {
                 setLoading(false);
                 setError('ID do usuário não fornecido.');
                 return;
             }
 
-            if (urlUserId) {
-                try {
-                    const userResponse = await axios.get(`http://localhost:3001/user/${urlUserId}`, { withCredentials: true });
-                    setUserName(userResponse.data.nome); 
-                } catch (err) {
-                    console.error('Erro ao carregar nome do usuário:', err);
-                    setUserName('Usuário Desconhecido');
-                }
-            }
-
-            const storedUserType = Cookies.get('tipo');
-            if (storedUserType) {
-                setUserType(storedUserType);
-            }
+            const storedUserType = getLoggedInUserType();
+            setUserType(storedUserType || '');
             
             try {
-                const response = await axios.get(`http://localhost:3001/company/user/${currentUserId}`, { withCredentials: true });
-                const companiesData = Array.isArray(response.data) ? response.data : [response.data];
+                const userResponse = await axios.get(`http://localhost:3001/users/${userId}`, { withCredentials: true });
+                setUserName(userResponse.data.nome);
+
+                const companiesResponse = await axios.get(`http://localhost:3001/users/${userId}/companies`, { withCredentials: true });
+                const companiesData = Array.isArray(companiesResponse.data) ? companiesResponse.data : [companiesResponse.data];
 
                 const validCompanies = companiesData.filter(company => company !== null && company !== undefined);
                 setCompanies(validCompanies);
@@ -77,7 +71,11 @@ export default function CompanyList() {
             }
             };
             fetchCompanies();
-    }, [currentUserId, urlUserId]);
+    }, [userId]);
+
+    const handleAddCompany = () => {
+        router.push(`/dashboard/management/company/add?userId=${userId}`);
+    }
 
     const handleDeleteCompany = (companyId) => {
         setCompanyToDeleteId(companyId);
@@ -86,7 +84,7 @@ export default function CompanyList() {
 
     const confirmDelete = async () => {
         try {
-            await axios.delete(`http://localhost:3001/company/${companyToDeleteId}`, { withCredentials: true });
+            await axios.delete(`http://localhost:3001/users/${userId}/companies/${companyToDeleteId}`, { withCredentials: true });
             setCompanies(companies.filter(c => c.id !== companyToDeleteId));
             setIsDeleteDialogOpen(false);
             setCompanyToDeleteId(null);
@@ -95,6 +93,10 @@ export default function CompanyList() {
             setError('Falha ao remover o empresa.');
         }
     };
+
+    const handleBack = () => {
+        router.push('/dashboard/management/user');
+    }
 
     if (loading) {
         return (
@@ -115,14 +117,7 @@ export default function CompanyList() {
                     {userType === 'admin' && urlUserId && userName ? `Gerenciamento de empresas de ${userName}` : 'Gerenciamento de empresas'}
                 </Typography>
                 {companies.length === 0 ? (
-                    <>
-                        <Typography color='text-secondary' align='center'>Este usuário não possui empresa cadastrada.</Typography>
-                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                            <Button variant="contained" onClick={() => router.push(`/dashboard/management/company/add?userId=${userId}`)}>
-                                Cadastrar Empresa
-                            </Button>
-                        </Box>
-                    </>
+                    <Typography color='text-secondary' align='center'>Este usuário não possui empresa cadastrada.</Typography>
                 ) : (
                     <TableContainer sx={{ overflowX: "hidden" }}>
                         <Table aria-label='Tabela de empresas cadastradas'>
@@ -154,11 +149,11 @@ export default function CompanyList() {
                                                     <IconButton
                                                         aria-label='Editar empresa'
                                                         size='small'
-                                                        href={`/dashboard/management/company/edit?companyId=${company.id}&userId=${urlUserId}`}
+                                                        href={`/dashboard/management/company/edit?companyId=${company.id}&userId=${userId}`}
                                                     >
                                                         <EditIcon />
                                                     </IconButton>
-                                                </Tooltip>
+                                                </Tooltip>     
                                                 <Tooltip title='Excluir'>
                                                     <IconButton
                                                         aria-label='Excluir empresa'
@@ -237,7 +232,7 @@ export default function CompanyList() {
                                                     <Typography variant='body2' component='div' m={2}>
                                                         <>
                                                             Deseja visualizar ou cadastrar um novo funcionário?
-                                                            <Link href={`/dashboard/management/employee?companyId=${company.id}&userId=${urlUserId}`}> <strong>Clique aqui</strong></Link>
+                                                            <Link href={`/dashboard/management/employee?companyId=${company.id}&userId=${userId}`}> <strong>Clique aqui</strong></Link>
                                                         </>
                                                     </Typography>
                                                 </Collapse>
@@ -269,23 +264,46 @@ export default function CompanyList() {
                     </DialogActions>
                 </Dialog>
 
-                {(userType === 'admin' || userType === 'collaborator') && (
-                    <Button 
-                        href={`/dashboard/management/user`}
+                <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'space-between' }}>
+                    {(userType === 'admin' || userType === 'collaborator') && (
+                        <Button
+                            onClick={handleBack}
+                            variant='contained'
+                            sx={{
+                                color: 'var(--cordestaque)',
+                                bgcolor: 'white',
+                                border: '1px solid var(--cordestaque)',
+                                width: '10px',
+                                mt: '20px',
+                                '&:hover': {
+                                    bgcolor: 'var(--corhover)',
+                                },
+                                borderRadius: isSmallScreen ? '50px' : 'none',
+                                minWidth: isSmallScreen ? '80px' : '150px',
+                                padding: isSmallScreen ? '8px' : '6px 16px',
+                            }}
+                        >
+                            {isSmallScreen ? <ArrowBackIcon /> : 'Voltar'}
+                        </Button>
+                    )}
+                    <Button
+                        onClick={handleAddCompany}
+                        variant='contained'
                         sx={{
                             bgcolor: 'var(--cordestaque)',
                             color: 'white',
-                            width: '10px',
-                            borderRadius: '50px',
                             mt: '20px',
                             '&:hover': {
                                 bgcolor: 'var(--corhover)',
                             },
+                            borderRadius: isSmallScreen ? '50px' : 'none',
+                            minWidth: isSmallScreen ? '80px' : '150px',
+                            padding: isSmallScreen ? '8px' : '6px 16px',
                         }}
                     >
-                        <ArrowBackIcon/>
+                        {isSmallScreen ? <AddIcon /> : 'Adicionar empresa'}
                     </Button>
-                )}
+                </Box>
             </Paper>
         </Container>
     )

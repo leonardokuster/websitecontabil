@@ -2,13 +2,13 @@ import express from "express";
 import EmployeeController from "../controllers/employeeController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 
-const employeeRoutes = express.Router();
+const employeeRoutes = express.Router({ mergeParams: true });
 
 employeeRoutes
-    .post("/register", authMiddleware(), EmployeeController.cadastrarFuncionario)
-    .get("/company/:companyId", authMiddleware(), EmployeeController.buscarFuncionarioPorEmpresaId)
-    .get("/:id", authMiddleware(), EmployeeController.buscarFuncionarioPorId)
-    .put("/:id", authMiddleware(), EmployeeController.editarFuncionario)
-    .delete("/:id", authMiddleware(), EmployeeController.removerFuncionario);
+    .post("/", authMiddleware(), EmployeeController.cadastrarFuncionario) // POST /users/:userId/companies/:companyId/employees/
+    .get("/", authMiddleware(), EmployeeController.buscarFuncionariosPorEmpresaId) // GET /users/:userId/companies/:companyId/employees/
+    .get("/:employeeId", authMiddleware(), EmployeeController.buscarFuncionarioPorId) // GET /users/:userId/companies/:companyId/employees/:employeeId
+    .put("/:employeeId", authMiddleware(), EmployeeController.editarFuncionario) // PUT /users/:userId/companies/:companyId/employees/:employeeId
+    .delete("/:employeeId", authMiddleware(), EmployeeController.removerFuncionario); // DELETE /users/:userId/companies/:companyId/employees/:employeeId
 
 export default employeeRoutes;

@@ -4,13 +4,17 @@ import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
-import { TextField, Button, Stepper, Step, StepLabel, Box, Alert, FormControlLabel, Checkbox, Paper, Grid, Typography } from '@mui/material';
+import { TextField, Button, Stepper, Step, StepLabel, Box, Alert, FormControlLabel, Checkbox, Paper, Grid, Typography, InputAdornment, IconButton } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import PhoneMask from '@/components/form/masks/phone/PhoneMask';
 import CpfMask from '@/components/form/masks/cpf/CpfMask';
 import CnpjMask from '@/components/form/masks/cnpj/CnpjMask';
 import CurrencyMask from '@/components/form/masks/currency/CurrencyMask';
 import DateMask from '@/components/form/masks/date/DateMask';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { format, parse } from 'date-fns';
 
 const steps = ['Dados pessoais', 'Dados da empresa'];
 
@@ -58,11 +62,11 @@ const personalSchema = yup.object({
         .string()
         .oneOf([yup.ref('senha'), null], 'As senhas devem coincidir')
         .required('Confirmação de senha é obrigatória'),
-});
-
-const companySchema = yup.object({
     possuiEmpresa: yup
         .boolean(),
+});
+
+const companySchema = yup.object({  
     cnpj: yup
         .string()
         .when('possuiEmpresa', { 
@@ -133,17 +137,20 @@ export default function SignupForm() {
     const [step, setStep] = useState(0);
     const [message, setMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfPassword, setShowConfPassword] = useState(false);
+    const router = useRouter();
 
     const fetchAddress = async (cep) => {
         const cleanCep = cep.replace(/\D/g, '');
         if (cleanCep.length !== 8) return;
         try {
-        const res = await axios.get(`https://viacep.com.br/ws/${cleanCep}/json/`);
-        if (!res.data.erro) {
-            formik.setFieldValue('endereco', res.data.logradouro || '');
-        }
+            const res = await axios.get(`https://viacep.com.br/ws/${cleanCep}/json/`);
+            if (!res.data.erro) {
+                formik.setFieldValue('endereco', res.data.logradouro || '');
+            }
         } catch (err) {
-        console.error('Erro ao buscar CEP:', err);
+            console.error('Erro ao buscar CEP:', err);
         }
     };
 
@@ -169,23 +176,39 @@ export default function SignupForm() {
             emailEmpresa: '',
             telefoneEmpresa: '',
             socios: '',
-            token: '',
-            userId: '',
         },
         validationSchema: step === 0 ? personalSchema : companySchema,
         validateOnChange: false,
         validateOnBlur: true,
-            onSubmit: async (values, { resetForm }) => {
+        onSubmit: async (values, { resetForm }) => {
             try {
-                await formik.validateForm(values);
+                await (step === 0 ? personalSchema : companySchema).validate(values, { abortEarly: false });
+                
+                const userValues = {
+                    nome: values.nome,
+                    telefonePessoal: values.telefonePessoal,
+                    emailPessoal: values.emailPessoal,
+                    dataNascimento: values.dataNascimento ? format(parse(values.dataNascimento, 'dd/MM/yyyy', new Date()), 'yyyy-MM-dd') : null,
+                    cpf: values.cpf,
+                    senha: values.senha,
+                    possuiEmpresa: values.possuiEmpresa,
+                };
 
+                const userResponse = await axios.post('http://localhost:3001/users', userValues, { 
+                    withCredentials: true,
+                    headers: { 'Content-Type': 'application/json' },
+                });
+                console.log("Resposta do backend:", userResponse.data);
+                const { id: userId, token } = userResponse.data;
+                console.log("Token recebido:", token);
+                
                 if (values.possuiEmpresa) {
-                    const companyData = { 
+                    const companyValues = {
                         cnpj: values.cnpj,
                         nomeFantasia: values.nomeFantasia,
                         razaoSocial: values.razaoSocial,
                         atividadesExercidas: values.atividadesExercidas,
-                        capitalSocial: values.capitalSocial.replace(/\./g, '').replace(',', '.'), 
+                        capitalSocial: Number(values.capitalSocial.replace(/\./g, '').replace(',', '.')) || 0,
                         cep: values.cep,
                         endereco: values.endereco,
                         numeroEmpresa: values.numeroEmpresa,
@@ -193,97 +216,59 @@ export default function SignupForm() {
                         emailEmpresa: values.emailEmpresa,
                         telefoneEmpresa: values.telefoneEmpresa,
                         socios: values.socios,
+                        userId, 
                     };
-
-                    const companyResponse = await axios.post('http://localhost:3001/company/register', { ...companyData, userId: values.userId }, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${values.token}`
-                        },
+                    await axios.post(`http://localhost:3001/users/${userId}/companies`, companyValues, { 
+                        withCredentials: true,
+                        headers: { 'Content-Type': 'application/json' },
                     });
-                    console.log('Empresa cadastrada com sucesso:', companyResponse.data);
-                    setMessage('Cadastro realizado! Faça login para continuar.');
-                    setIsSuccess(true);
-                    resetForm();
-                    setStep(0);
                 }
+                
+                setMessage('Cadastro realizado com sucesso!');
+                setIsSuccess(true);
+                resetForm();
+                setTimeout(() => {
+                    router.push('/login'); 
+                }, 2000);
             } catch (error) {
+                console.error("Erro no cadastro:", error);
                 setMessage(error.response?.data?.message || 'Erro no cadastro.');
                 setIsSuccess(false);
+                if (error.inner) {
+                    const fieldErrors = {};
+                    error.inner.forEach(err => {
+                        fieldErrors[err.path] = err.message;
+                    });
+                    formik.setErrors(fieldErrors);
+                }
             }
-            }
+        },
     });
 
     const handleNext = async () => {
-        // 1. Validar o formulário do passo atual ANTES do try/catch
         try {
             await personalSchema.validate(formik.values, { abortEarly: false });
-        } catch (validationErrors) {
-            // Se a validação falhar, define os campos tocados e retorna
-            const fieldErrors = {};
-            if (validationErrors.inner) { // Adicione esta verificação de segurança
-                validationErrors.inner.forEach(error => {
-                    fieldErrors[error.path] = true;
-                });
-            }
-            formik.setTouched(fieldErrors);
-            return; // Retorna para interromper a função
-        }
-
-        if (step === 0) {
-            // Se o usuário não tiver empresa, chame uma função de cadastro separada
-            if (!formik.values.possuiEmpresa) {
-                await handleCadastroUsuarioSemEmpresa(formik.values);
-                return;
-            }
-
-            // Se o usuário tiver empresa, faça o cadastro e avance
-            try {
-                const formattedValues = { ...formik.values };
-                if (formattedValues.dataNascimento) {
-                    const [day, month, year] = formattedValues.dataNascimento.split('/');
-                    formattedValues.dataNascimento = `${year}-${month}-${day}`;
-                }
-                
-                const userResponse = await axios.post('http://localhost:3001/user/register', formattedValues, {
-                    headers: { 'Content-Type': 'application/json' },
-                });
-
-                const { token, id } = userResponse.data;
-                formik.setFieldValue('userId', id);
-                formik.setFieldValue('token', token);
-
+            if (formik.values.possuiEmpresa) {
                 setStep(prev => prev + 1);
-            } catch (error) {
-                setMessage(error.response?.data?.message || 'Erro ao cadastrar usuário.');
-                setIsSuccess(false);
+            } else {
+                formik.handleSubmit();
             }
-        }
-    };
-
-    const handleCadastroUsuarioSemEmpresa = async (values) => {
-        try {
-            const formattedValues = { ...values };
-            if (formattedValues.dataNascimento) {
-                const [day, month, year] = formattedValues.dataNascimento.split('/');
-                formattedValues.dataNascimento = `${year}-${month}-${day}`;
-            }
-
-            const userResponse = await axios.post('http://localhost:3001/user/register', formattedValues, {
-                headers: { 'Content-Type': 'application/json' },
+        } catch (validationErrors) {
+            const fieldErrors = {};
+            validationErrors.inner.forEach(error => {
+                fieldErrors[error.path] = true;
             });
-
-            setMessage('Cadastro realizado! Faça login para continuar.');
-            setIsSuccess(true);
-            formik.resetForm();
-            setStep(0);
-        } catch (error) {
-            setMessage(error.response?.data?.message || 'Erro no cadastro.');
-            setIsSuccess(false);
+            formik.setTouched(fieldErrors);
         }
     };
 
     const handleBack = () => setStep((prev) => prev - 1);
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+    const handleClickShowConfPassword = () => setShowConfPassword((show) => !show);
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
 
     const motionVariants = {
         initial: { opacity: 0, x: 100 },
@@ -299,11 +284,21 @@ export default function SignupForm() {
                 ))}
             </Stepper>
 
-            {message && (
-                <Box sx={{ mt: 2 }}>
-                <Alert severity={isSuccess ? 'success' : 'error'}>{message}</Alert>
-                </Box>
-            )}
+            <AnimatePresence mode="wait">
+                {message && (
+                    <motion.div
+                        key="message"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <Box sx={{ mt: 2 }}>
+                            <Alert severity={isSuccess ? 'success' : 'error'}>{message}</Alert>
+                        </Box>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <Box component="form" onSubmit={formik.handleSubmit} >
                 <AnimatePresence mode="wait">
@@ -326,6 +321,7 @@ export default function SignupForm() {
                                         label="Nome completo"
                                         value={formik.values.nome} 
                                         onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
                                         error={formik.touched.nome && Boolean(formik.errors.nome)}
                                         helperText={formik.touched.nome && formik.errors.nome} 
                                     />
@@ -339,6 +335,7 @@ export default function SignupForm() {
                                         label="Email pessoal"
                                         value={formik.values.emailPessoal}
                                         onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
                                         error={formik.touched.emailPessoal && Boolean(formik.errors.emailPessoal)}
                                         helperText={formik.touched.emailPessoal && formik.errors.emailPessoal}
                                     />
@@ -352,6 +349,7 @@ export default function SignupForm() {
                                         label="Telefone pessoal"
                                         value={formik.values.telefonePessoal}
                                         onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
                                         error={formik.touched.telefonePessoal && Boolean(formik.errors.telefonePessoal)}
                                         helperText={formik.touched.telefonePessoal && formik.errors.telefonePessoal}
                                         slotProps={{
@@ -368,6 +366,7 @@ export default function SignupForm() {
                                         label="CPF"
                                         value={formik.values.cpf}
                                         onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
                                         error={formik.touched.cpf && Boolean(formik.errors.cpf)}
                                         helperText={formik.touched.cpf && formik.errors.cpf}
                                         slotProps={{
@@ -399,12 +398,27 @@ export default function SignupForm() {
                                         margin="normal"
                                         id="senha"
                                         name="senha"
-                                        type="password"
+                                        type={showPassword ? 'text' : 'password'}
                                         label="Senha"
                                         value={formik.values.senha}
                                         onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
                                         error={formik.touched.senha && Boolean(formik.errors.senha)}
-                                        helperText={formik.touched.senha && formik.errors.senha} 
+                                        helperText={formik.touched.senha && formik.errors.senha}
+                                        slotProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
                                     />
                                 </Grid>
                                 <Grid item size={{ xs: 12, md: 6 }}>
@@ -413,21 +427,35 @@ export default function SignupForm() {
                                         margin="normal"
                                         id="confisenha"
                                         name="confisenha"
-                                        type="password"
+                                        type={showConfPassword ? 'text' : 'password'}
                                         label="Confirme sua senha"
                                         value={formik.values.confisenha}
                                         onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
                                         error={formik.touched.confisenha && Boolean(formik.errors.confisenha)}
                                         helperText={formik.touched.confisenha && formik.errors.confisenha}
+                                        slotProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowConfPassword}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        edge="end"
+                                                    >
+                                                        {showConfPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
                                     />
                                 </Grid>
-                                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', width: '100%'}}>
+                                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center'}}>
                                     <FormControlLabel
                                         control={<Checkbox name="possuiEmpresa" checked={formik.values.possuiEmpresa} onChange={formik.handleChange} />}
                                         label="Possuo empresa"
                                     />
                                     <Button 
-                                        fullWidth
                                         variant='contained' 
                                         onClick={handleNext} 
                                         sx={{
@@ -463,6 +491,7 @@ export default function SignupForm() {
                                             label="CNPJ"
                                             value={formik.values.cnpj}
                                             onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
                                             error={formik.touched.cnpj && Boolean(formik.errors.cnpj)}
                                             helperText={formik.touched.cnpj && formik.errors.cnpj}
                                             slotProps={{
@@ -479,6 +508,7 @@ export default function SignupForm() {
                                             label="Nome fantasia"
                                             value={formik.values.nomeFantasia}
                                             onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
                                             error={formik.touched.nomeFantasia && Boolean(formik.errors.nomeFantasia)}
                                             helperText={formik.touched.nomeFantasia && formik.errors.nomeFantasia}
                                         />
@@ -492,6 +522,7 @@ export default function SignupForm() {
                                             label="Razão social"
                                             value={formik.values.razaoSocial}
                                             onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
                                             error={formik.touched.razaoSocial && Boolean(formik.errors.razaoSocial)}
                                             helperText={formik.touched.razaoSocial && formik.errors.razaoSocial}
                                         />
@@ -505,6 +536,7 @@ export default function SignupForm() {
                                             label="Capital social"
                                             value={formik.values.capitalSocial}
                                             onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
                                             error={formik.touched.capitalSocial && Boolean(formik.errors.capitalSocial)}
                                             helperText={formik.touched.capitalSocial && formik.errors.capitalSocial}
                                             slotProps={{
@@ -521,6 +553,7 @@ export default function SignupForm() {
                                             label="Atividades exercidas"
                                             value={formik.values.atividadesExercidas} 
                                             onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
                                             error={formik.touched.atividadesExercidas && Boolean(formik.errors.atividadesExercidas)}
                                             helperText={formik.touched.atividadesExercidas && formik.errors.atividadesExercidas} 
                                         />
@@ -537,6 +570,7 @@ export default function SignupForm() {
                                                 formik.handleChange(e);
                                                 fetchAddress(e.target.value);
                                             }}
+                                            onBlur={formik.handleBlur}
                                             error={formik.touched.cep && Boolean(formik.errors.cep)}
                                             helperText={formik.touched.cep && formik.errors.cep} 
                                         />
@@ -550,6 +584,7 @@ export default function SignupForm() {
                                             label="Endereço"
                                             value={formik.values.endereco}
                                             onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
                                             error={formik.touched.endereco && Boolean(formik.errors.endereco)}
                                             helperText={formik.touched.endereco && formik.errors.endereco}
                                         />
@@ -563,6 +598,7 @@ export default function SignupForm() {
                                             label="Número"
                                             value={formik.values.numeroEmpresa}
                                             onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
                                             error={formik.touched.numeroEmpresa && Boolean(formik.errors.numeroEmpresa)}
                                             helperText={formik.touched.numeroEmpresa && formik.errors.numeroEmpresa}
                                         />
@@ -576,6 +612,7 @@ export default function SignupForm() {
                                             label="Complemento"
                                             value={formik.values.complementoEmpresa} 
                                             onChange={formik.handleChange} 
+                                            onBlur={formik.handleBlur}
                                         />
                                     </Grid>
                                     <Grid item size={{ xs: 12, md: 6 }}>
@@ -587,6 +624,7 @@ export default function SignupForm() {
                                             label="Email da empresa"
                                             value={formik.values.emailEmpresa}
                                             onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
                                             error={formik.touched.emailEmpresa && Boolean(formik.errors.emailEmpresa)}
                                             helperText={formik.touched.emailEmpresa && formik.errors.emailEmpresa}
                                         />
@@ -600,6 +638,7 @@ export default function SignupForm() {
                                             label="Telefone da empresa"
                                             value={formik.values.telefoneEmpresa}
                                             onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
                                             error={formik.touched.telefoneEmpresa && Boolean(formik.errors.telefoneEmpresa)}
                                             helperText={formik.touched.telefoneEmpresa && formik.errors.telefoneEmpresa}
                                             slotProps={{
@@ -619,19 +658,21 @@ export default function SignupForm() {
                                             label="Nome dos sócios"
                                             value={formik.values.socios}
                                             onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
                                             error={formik.touched.socios && Boolean(formik.errors.socios)}
                                             helperText={formik.touched.socios && formik.errors.socios}
                                         />
-                                    </Grid>  
-                                    <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', gap: { xs: 2, md: 10 } }}>
+                                    </Grid>
+                                    <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', width: '100%', gap: { xs: 2, md: 10 }}}>
                                         <Button 
+                                            fullWidth
                                             variant='contained' 
                                             onClick={handleBack} 
                                             sx={{
                                                 color: 'var(--cordestaque)',
                                                 bgcolor: 'white',
-                                                width: '100%',
                                                 border: '1px solid var(--cordestaque)',
+                                                width: '100%',
                                             }}
                                         >
                                             Voltar

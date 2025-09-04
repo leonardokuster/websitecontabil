@@ -9,8 +9,6 @@ import Image from 'next/image';
 export default function ServicesPage() {
     return (
         <Box component="main">
-            
-            
             <Grid container spacing={{ xs: 0, md: 5}} p={4} alignItems="center" justifyContent="center">
                 <Grid item size={6}>
                 <Box sx={{ display: { xs: 'none', md: 'block' } }}>
@@ -29,11 +27,11 @@ export default function ServicesPage() {
                 </Grid>
             </Grid>
             <Divider />
-            <Carousel 
-                showButton={false} 
-                backgroundColor="white" 
-                cardColor="#070E26" 
-                textColor="white" 
+            <Carousel
+                showButton={false}
+                backgroundColor="white"
+                cardColor="#070E26"
+                textColor="white"
                 titleColor="white"
             />
         </Box>

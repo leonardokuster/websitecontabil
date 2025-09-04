@@ -2,13 +2,13 @@ import express from "express";
 import CompanyController from "../controllers/companyController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 
-const companyRoutes = express.Router();
+const companyRoutes = express.Router({ mergeParams: true });
 
 companyRoutes
-    .post("/register", authMiddleware(), CompanyController.criarEmpresa)
-    .get("/user/:userId", authMiddleware(["admin", "collaborator", "user"]), CompanyController.buscarEmpresa) 
-    .get("/:id", authMiddleware(), CompanyController.buscarEmpresaPorId)
-    .put("/:id", authMiddleware(), CompanyController.editarEmpresa)
-    .delete("/:id", authMiddleware(), CompanyController.removerEmpresa);
+    .post("/", authMiddleware(), CompanyController.criarEmpresa) // POST /users/:userId/companies
+    .get("/", authMiddleware(["admin", "collaborator", "user"]), CompanyController.buscarEmpresasPorUsuarioId) // GET /users/:userId/companies
+    .get("/:companyId", authMiddleware(), CompanyController.buscarEmpresaPorId) // GET /users/:userId/companies/:companyId
+    .put("/:companyId", authMiddleware(), CompanyController.editarEmpresa) // PUT /users/:userId/companies/:companyId
+    .delete("/:companyId", authMiddleware(), CompanyController.removerEmpresa); // DELETE /users/:userId/companies/:companyId
 
 export default companyRoutes;

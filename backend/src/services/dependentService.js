@@ -51,7 +51,7 @@ class DependentService {
     return { message: "Dependente removido com sucesso." };
   }
 
-  async buscarDependentePorFuncionarioId(employeeId) {
+  async buscarDependentesPorFuncionarioId(employeeId) {
     const dependentes = await database.Dependent.findAll({
       where: { employeeId },
     });

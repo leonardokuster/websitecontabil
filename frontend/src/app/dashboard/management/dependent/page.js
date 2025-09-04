@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Paper, Typography, Box, CircularProgress, Alert, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Grid, Collapse, IconButton, Tooltip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, FormControl, Select, MenuItem } from '@mui/material';
+import { useTheme, useMediaQuery, Container, Paper, Typography, Box, CircularProgress, Alert, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Grid, Collapse, IconButton, Tooltip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, FormControl, Select, MenuItem } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -12,11 +13,17 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { format, parse } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import Cookies from 'js-cookie';
+
+const getLoggedInUserId = () => Cookies.get('usuario_id');
 
 export default function DependentList() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const loggedUserId = getLoggedInUserId();
     const urlUserId = searchParams.get('userId');
+    const userId = urlUserId || loggedUserId;
+
     const urlCompanyId = searchParams.get('companyId');
     const urlEmployeeId = searchParams.get('employeeId');
 
@@ -28,23 +35,25 @@ export default function DependentList() {
     const [dependentToDeleteId, setDependentToDeleteId] = useState(null);
     const [employeeName, setEmployeeName] = useState('');
 
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     useEffect(() => {
         const fetchDependents = async () => {
             setLoading(true);
             setError(null);
 
-            if (!urlEmployeeId) {
+            if (!userId || !urlCompanyId || !urlEmployeeId) {
                 setLoading(false);
-                setError('ID do funcionário não fornecido.');
+                setError('IDs de usuário, empresa ou funcionário não fornecidos.');
                 return;
             }
             
             try {
-                const employeeResponse = await axios.get(`http://localhost:3001/employee/${urlEmployeeId}`, { withCredentials: true });
+                const employeeResponse = await axios.get(`http://localhost:3001/users/${userId}/companies/${urlCompanyId}/employees/${urlEmployeeId}`, { withCredentials: true });
                 setEmployeeName(employeeResponse.data.nome);
 
-                const dependentResponse = await axios.get(`http://localhost:3001/dependent/employee/${urlEmployeeId}`, { withCredentials: true });
+                const dependentResponse = await axios.get(`http://localhost:3001/users/${userId}/companies/${urlCompanyId}/employees/${urlEmployeeId}/dependents`, { withCredentials: true });
                 setDependents(dependentResponse.data);
             } catch (err) {
                 console.error('Erro ao carregar dados:', err);
@@ -58,7 +67,17 @@ export default function DependentList() {
             }
             };
             fetchDependents();
-    }, [urlEmployeeId]);
+    }, [userId, urlCompanyId, urlEmployeeId]);
+
+    const handleAddDependent = () => {
+        router.push(`/dashboard/management/dependent/add?employeeId=${urlEmployeeId}&companyId=${urlCompanyId}&userId=${userId}`);
+    }
+
+    const handleBack = () => {
+        const backPath = `/dashboard/management/employee?companyId=${urlCompanyId}&userId=${userId}`;
+        router.push(backPath);
+
+    };
 
     const handleDeleteDependent = (dependentId) => {
         setDependentToDeleteId(dependentId);
@@ -67,7 +86,7 @@ export default function DependentList() {
 
     const confirmDelete = async () => {
         try {
-            await axios.delete(`http://localhost:3001/dependent/${dependentToDeleteId}`, { withCredentials: true });
+            await axios.delete(`http://localhost:3001/users/${userId}/companies/${urlCompanyId}/employees/${urlEmployeeId}/dependents/${dependentToDeleteId}`, { withCredentials: true });
             setDependents(dependents.filter(c => c.id !== dependentToDeleteId));
             setIsDeleteDialogOpen(false);
             setDependentToDeleteId(null);
@@ -96,14 +115,7 @@ export default function DependentList() {
                     Gerenciamento de dependentes de {employeeName}
                 </Typography>
                 {dependents.length === 0 ? (
-                    <>
-                        <Typography color='text-secondary' align='center'>Este funcionário não possui dependentes cadastrados.</Typography>
-                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                            <Button variant="contained" onClick={() => router.push(`/dashboard/management/company/add?companyId=${urlCompanyId}&userId=${urlUserId}`)}>
-                                Cadastrar dependente
-                            </Button>
-                        </Box>
-                    </>
+                    <Typography color='text-secondary' align='center'>Este funcionário não possui dependentes cadastrados.</Typography>
                 ) : (
                     <TableContainer sx={{ overflowX: "hidden" }}>
                         <Table aria-label='Tabela de dependentes cadastrados'>
@@ -135,7 +147,7 @@ export default function DependentList() {
                                                     <IconButton
                                                         aria-label='Editar dependente'
                                                         size='small'
-                                                        href={`/dashboard/management/dependent/edit?dependentId=${dependent.id}&employeeId=${urlEmployeeId}&companyId=${urlCompanyId}&userId=${urlUserId}`}
+                                                        href={`/dashboard/management/dependent/edit?dependentId=${dependent.id}&employeeId=${urlEmployeeId}&companyId=${urlCompanyId}&userId=${userId}`}
                                                     >
                                                         <EditIcon />
                                                     </IconButton>
@@ -199,39 +211,44 @@ export default function DependentList() {
                         </Button>
                     </DialogActions>
                 </Dialog>
-                {urlCompanyId && urlCompanyId !== 'null' ? (
-                    <Button 
-                        href={`/dashboard/management/employee?companyId=${urlCompanyId}`}
+                <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'space-between' }}>
+                    <Button
+                        onClick={handleBack}
+                        variant='contained'
                         sx={{
-                            bgcolor: 'var(--cordestaque)',
-                            color: 'white',
+                            color: 'var(--cordestaque)',
+                            bgcolor: 'white',
+                            border: '1px solid var(--cordestaque)',
                             width: '10px',
-                            borderRadius: '50px',
                             mt: '20px',
                             '&:hover': {
                                 bgcolor: 'var(--corhover)',
                             },
+                            borderRadius: isSmallScreen ? '50px' : 'none',
+                            minWidth: isSmallScreen ? '80px' : '150px',
+                            padding: isSmallScreen ? '8px' : '6px 16px',
                         }}
                     >
-                        <ArrowBackIcon/>
+                        {isSmallScreen ? <ArrowBackIcon /> : 'Voltar'}
                     </Button>
-                ) : (
-                    <Button 
-                        href={`/dashboard/management/employee`}
+                    <Button
+                        onClick={handleAddDependent}
+                        variant='contained'
                         sx={{
                             bgcolor: 'var(--cordestaque)',
                             color: 'white',
-                            width: '10px',
-                            borderRadius: '50px',
                             mt: '20px',
                             '&:hover': {
                                 bgcolor: 'var(--corhover)',
                             },
+                            borderRadius: isSmallScreen ? '50px' : 'none',
+                            minWidth: isSmallScreen ? '80px' : '150px',
+                            padding: isSmallScreen ? '8px' : '6px 16px',
                         }}
                     >
-                        <ArrowBackIcon/>
+                        {isSmallScreen ? <AddIcon /> : 'Adicionar dependente'}
                     </Button>
-                )}
+                </Box>
             </Paper>
         </Container>
     )

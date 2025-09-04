@@ -68,7 +68,7 @@ export default function UserEditPage() {
                     valuesToSend.dataNascimento = format(parsedDate, 'yyyy-MM-dd');
                 }
 
-                await axios.put(`http://localhost:3001/user/${userId}`, valuesToSend, { withCredentials: true });
+                await axios.put(`http://localhost:3001/users/${userId}`, valuesToSend, { withCredentials: true });
                 router.push('/dashboard/management'); 
             } catch (err) {
                 console.error('Erro ao salvar usuário:', err);
@@ -88,7 +88,7 @@ export default function UserEditPage() {
 
         const fetchUser = async () => {
             try {
-                const response = await axios.get(`http://localhost:3001/user/${userId}`, { withCredentials: true });
+                const response = await axios.get(`http://localhost:3001/users/${userId}`, { withCredentials: true });
                 const userData = response.data;
                 const formattedUserData = {
                     ...userData,
@@ -107,6 +107,10 @@ export default function UserEditPage() {
 
         fetchUser();
     }, [userId]);
+
+    const handleCancel = () => {
+        router.push('/dashboard/management');
+    };
 
     if (loading) {
         return (
@@ -213,7 +217,12 @@ export default function UserEditPage() {
                         <Button
                             variant="outlined"
                             startIcon={<CancelIcon />}
-                            onClick={() => router.push('/dashboard/management/user')}
+                            onClick={handleCancel}
+                            sx={{
+                                color: 'var(--cordestaque)',
+                                mt: '20px',
+                                border: '1px solid var(--cordestaque)'
+                            }}
                         >
                             Cancelar
                         </Button>
@@ -222,6 +231,14 @@ export default function UserEditPage() {
                             type="submit"
                             startIcon={<SaveIcon />}
                             disabled={isSubmitting}
+                            sx={{
+                                bgcolor: 'var(--cordestaque)',
+                                color: 'white',
+                                mt: '20px',
+                                '&:hover': {
+                                    bgcolor: 'var(--corhover)',
+                                },
+                            }}
                         >
                             Salvar Alterações
                         </Button>

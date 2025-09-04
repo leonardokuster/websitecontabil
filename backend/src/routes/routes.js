@@ -7,10 +7,10 @@ import contactRoutes from './contactRoutes.js';
 
 const router = express.Router();
 
-router.use('/user', userRoutes);
-router.use('/company',companyRoutes);
-router.use('/employee',employeeRoutes);
-router.use('/dependent',dependentRoutes);
+router.use('/users', userRoutes);
+router.use('/users/:userId/companies', companyRoutes);
+router.use('/users/:userId/companies/:companyId/employees', employeeRoutes); 
+router.use('/users/:userId/companies/:companyId/employees/:employeeId/dependents', dependentRoutes);
 router.use('/contact',contactRoutes);
 
 export default router;

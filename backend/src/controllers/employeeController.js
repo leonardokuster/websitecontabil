@@ -4,19 +4,14 @@ const employeeService = new EmployeeService();
 
 class EmployeeController {
   static async cadastrarFuncionario(req, res) {
-    const { companyId, ...employeeData } = req.body;
-
-    const { id: userId, tipo: userType } = req;
+    const { companyId } = req.params;
+    const employeeData = req.body;
 
     console.log('Dados recebidos:', req.body);
     console.log('ID Empresa:', companyId);
 
     try {
-      if (!companyId) {
-        return res.status(400).json({ error: 'ID da empresa é obrigatório.' });
-      }
-
-      const funcionario = await employeeService.cadastrarFuncionario(employeeData, companyId, userId, userType);
+      const funcionario = await employeeService.cadastrarFuncionario(employeeData, companyId);
       return res.status(201).json(funcionario);
     } catch (error) {
       return res.status(400).json({ error: error.message });
@@ -25,8 +20,8 @@ class EmployeeController {
 
   static async editarFuncionario(req, res) {
     try {
-      const { id } = req.params;
-      const funcionario = await employeeService.editarFuncionario(id, req.body);
+      const { employeeId } = req.params;
+      const funcionario = await employeeService.editarFuncionario(employeeId, req.body);
       return res.status(200).json(funcionario);
     } catch (error) {
       return res.status(400).json({ error: error.message });
@@ -35,18 +30,23 @@ class EmployeeController {
 
   static async removerFuncionario(req, res) {
     try {
-      const { id } = req.params;
-      const result = await employeeService.removerFuncionario(id);
+      const { employeeId } = req.params;
+      const result = await employeeService.removerFuncionario(employeeId);
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({ error: error.message });
     }
   }
 
-  static async buscarFuncionarioPorEmpresaId(req, res) {
+  static async buscarFuncionariosPorEmpresaId(req, res) {
     try {
       const { companyId } = req.params;
-      const funcionarios = await employeeService.buscarFuncionarioPorEmpresaId(companyId);
+      const funcionarios = await employeeService.buscarFuncionariosPorEmpresaId(companyId);
+
+      if (funcionarios.length === 0) {
+        return res.status(404).json({ message: 'Nenhum funcionário encontrado para esta empresa.' });
+      }
+
       return res.status(200).json(funcionarios);
     } catch (error) {
       return res.status(400).json({ error: error.message });
@@ -55,13 +55,13 @@ class EmployeeController {
 
   static async buscarFuncionarioPorId(req, res) {
     try {
-      const { id } = req.params;
-      const funcionario = await employeeService.buscarFuncionarioPorId(id);
+      const { employeeId } = req.params;
+      const funcionario = await employeeService.buscarFuncionarioPorId(employeeId);
 
       if (!funcionario) {
         return res.status(404).json({ message: 'Funcionário não encontrado.'});
       }
-      res.status(200).json(funcionario);
+      return res.status(200).json(funcionario);
     } catch (error) {
       return res.status(404).json({ error: error.message });
     }

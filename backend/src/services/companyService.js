@@ -54,24 +54,16 @@ class CompanyService {
         return novaEmpresa;   
     }
 
-    async buscarEmpresa(userId) {
-        const empresa = await database.Company.findOne({
+    async buscarEmpresasPorUsuarioId(userId) {
+        const empresas = await database.Company.findAll({
             where: { userId }
         })
 
-        if (!empresa) {
-            return null;
-        }
-
-        return empresa;
+        return empresas;
     }
 
     async buscarEmpresaPorId(id) {
         const empresa = await database.Company.findByPk(id);
-
-        if (!empresa) {
-            return null;
-        }
 
         return empresa;
     }

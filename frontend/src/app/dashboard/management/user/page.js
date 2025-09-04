@@ -22,7 +22,7 @@ export default function UserList() {
     useEffect(() => {
         const fetchUsers = async () => {
         try {
-            const response = await axios.get('http://localhost:3001/user/', { withCredentials: true });
+            const response = await axios.get('http://localhost:3001/users/', { withCredentials: true });
             setUsers(response.data);
         } catch (err) {
             console.error('Erro ao carregar usuários:', err);
@@ -43,7 +43,7 @@ export default function UserList() {
         if (!userToDeleteId) return;
 
         try {
-            await axios.delete(`http://localhost:3001/user/${userToDeleteId}`, { withCredentials: true });
+            await axios.delete(`http://localhost:3001/users/${userToDeleteId}`, { withCredentials: true });
             setUsers(users.filter(user => user.id !== userToDeleteId));
             setIsDeleteDialogOpen(false);
             setUserToDeleteId(null);
