@@ -24,6 +24,12 @@ const pageRoutes = {
     'Serviços': '/dashboard/services',
     'Solicitações': '/dashboard/solicitations'
 };
+
+const settingsPage = {
+    'Perfil': '/dashboard/perfil',
+    'Configurações': '/dashboard/settings'
+};
+
 const pages = Object.keys(pageRoutes);
 const settings = ['Perfil', 'Configurações', 'Sair'];
 
@@ -52,6 +58,18 @@ function ResponsiveAppBar() {
 
     const handleCloseNavMenu = () => { setAnchorElNav(null); };
     const handleCloseUserMenu = () => { setAnchorElUser(null); };
+
+    const handleSettingsClick = (setting) => {
+    handleCloseUserMenu();
+    if (setting === 'Sair') {
+        handleLogout();
+    } else {
+        const route = settingsPage[setting];
+        if (route) {
+            router.push(route);
+        }
+    }
+};
 
     const handleLogout = async () => {
         try {
@@ -184,7 +202,7 @@ function ResponsiveAppBar() {
                     {settings.map((setting) => (
                         <MenuItem 
                             key={setting} 
-                            onClick={setting === 'Sair' ? handleLogout : handleCloseUserMenu}
+                            onClick={() => handleSettingsClick(setting)}
                         >
                             <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
                         </MenuItem>
