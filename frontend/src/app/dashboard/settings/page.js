@@ -117,8 +117,8 @@ export default function SettingsPage() {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                minHeight: '100vh',
-                p: 2,
+                minHeight: '81vh',
+                p: 2
             }}
         >
             <Paper elevation={3} sx={{ p: 4, maxWidth: 600, borderRadius: '16px'}}>

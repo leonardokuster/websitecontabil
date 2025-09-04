@@ -135,7 +135,15 @@ export default function ProfilePage() {
     if (!user) return <Typography>Usuário não encontrado</Typography>;
 
     return (
-        <Container maxWidth="sm" sx={{ minHeight: '80vh', alignContent: 'center' }}>
+        <Container 
+            maxWidth="sm" 
+            sx={{
+                p: 2,
+                m: 'auto',
+                mt: '7%',
+                mb: '7%'
+            }}
+        >
             <Paper elevation={3} sx={{ p: 4, m: 4 }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
                     <Typography variant="h4">Perfil</Typography>
@@ -213,7 +221,11 @@ export default function ProfilePage() {
                                     bgcolor: 'white',
                                     border: '1px solid var(--cordestaque)',
                                     mt: '20px',
-                                    borderRadius: '50px'
+                                    borderRadius: '50px',
+                                    '&:hover': {
+                                        color: 'white',
+                                        bgcolor: 'var(--corhover)',
+                                    },
                                 }}
                             >
                                 {isSmallScreen ? <CloseIcon /> : 'Cancelar'}

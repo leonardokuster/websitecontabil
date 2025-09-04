@@ -30,7 +30,15 @@ export default function ServicesPage() {
     }, [loggedInUserId]);
 
     return (
-        <Box component="main">
+        <Box 
+            sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '85vh',
+                p: 2
+            }}
+        >
             <Grid container spacing={{ xs: 0, md: 5}} p={4} alignItems="center" justifyContent="center">
                 <Grid item size={6}>
                 <Box sx={{ display: { xs: 'none', md: 'block' } }}>

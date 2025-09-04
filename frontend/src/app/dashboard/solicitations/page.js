@@ -114,7 +114,16 @@ export default function ContactsPage() {
     const displayedContacts = contacts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     return (
-        <Container component="main" sx={{ pt: 4, pb: 4 }}>
+        <Container component='main'
+            sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '85vh',
+                pt: 2,
+                pb: 2,
+            }}
+        >
             <Paper elevation={3} sx={{ width: '100%', overflow: 'hidden', borderRadius: '16px' }}>
                 <Typography variant="h4" component="h1" gutterBottom align="center" p={2}>
                     Gerenciamento de Contatos

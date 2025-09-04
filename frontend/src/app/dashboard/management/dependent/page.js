@@ -109,7 +109,15 @@ export default function DependentList() {
     }
     
     return (
-        <Container component="main" sx={{ pt: 4, pb: 4 }}>
+        <Container 
+            component="main" 
+            sx={{
+                m: 'auto',
+                minHeight: '85vh',
+                pt: 4,
+                pb: 4,
+            }}
+        >
             <Paper elevation={3} sx={{ p: 4, borderRadius: '16px' }}>
                 <Typography variant='h4' component='h1' gutterBottom align='center' mb={4}>
                     Gerenciamento de dependentes de {employeeName}
@@ -222,6 +230,7 @@ export default function DependentList() {
                             width: '10px',
                             mt: '20px',
                             '&:hover': {
+                                color: 'white',
                                 bgcolor: 'var(--corhover)',
                             },
                             borderRadius: isSmallScreen ? '50px' : 'none',
