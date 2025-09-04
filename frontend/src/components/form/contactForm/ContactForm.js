@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFormik } from "formik";
 import { TextField, MenuItem, Grid, Box, Typography, Button, Paper } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -40,7 +40,7 @@ const services = [
     {value: 'Outras opções', label: 'Outras opções'},
 ];
 
-export default function ContactForm({ showSecondTextField, showSecondButton, secondButtonText, title, subtitle }) {
+export default function ContactForm({ showSecondTextField, showSecondButton, secondButtonText, title, subtitle, initialData }) {
     const [message, setMessage] = useState('');
     const formik = useFormik({
         initialValues: {
@@ -63,6 +63,17 @@ export default function ContactForm({ showSecondTextField, showSecondButton, sec
             }
         },
     });
+
+    useEffect(() => {
+        if (initialData) {
+            formik.setValues({
+                ...formik.values,
+                fullname: initialData.nome || '',
+                email: initialData.emailPessoal || '',
+                phone: initialData.telefonePessoal || '',
+            });
+        }
+    }, [initialData]);
 
     const secondButton = showSecondButton ? (
         <Button

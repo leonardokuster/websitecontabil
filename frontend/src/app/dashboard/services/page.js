@@ -1,12 +1,34 @@
 'use client';
 
-import React from 'react';
-import { Container, Typography, Grid, Box, Divider } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Grid, Box, Divider } from '@mui/material';
 import ContactForm from '@/components/form/contactForm/ContactForm';
 import Carousel from '@/components/carousel/Carousel';
 import Image from 'next/image';
+import Cookies from 'js-cookie';
+import axios from 'axios';
+
+const getLoggedInUserId = () => Cookies.get('usuario_id');
 
 export default function ServicesPage() {
+    const loggedInUserId = getLoggedInUserId();
+    const [userData, setUserData] = useState(null);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (loggedInUserId) {
+                try {
+                    const response = await axios.get(`http://localhost:3001/users/${loggedInUserId}`, { withCredentials: true });
+                    setUserData(response.data);
+                } catch (error) {
+                    console.error('Erro ao buscar dados do usuário:', error);
+                }
+            }
+        };
+
+        fetchUserData();
+    }, [loggedInUserId]);
+
     return (
         <Box component="main">
             <Grid container spacing={{ xs: 0, md: 5}} p={4} alignItems="center" justifyContent="center">
@@ -17,6 +39,7 @@ export default function ServicesPage() {
                 </Grid>
                 <Grid item size={{ xs: 12, md: 6 }}>
                     <ContactForm
+                        initialData={userData}
                         title='Solicite um Orçamento'
                         subtitle='Envie uma mensagem para nossa equipe e receba um orçamento personalizado.'
                         showSecondTextField={true}
