@@ -104,6 +104,34 @@ class UserController {
         }
     }
 
+    static async alterarSenha(req, res) {
+        const { currentPassword, newPassword } = req.body;
+        const token = req.cookies.token;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ message: 'Senha atual e nova senha são obrigatórias.' });
+        }
+        if (!token) {
+            return res.status(401).json({ message: 'Não autorizado.' });
+        }
+
+        try {
+            await userService.alterarSenha(currentPassword, newPassword, token);
+            
+            return res.status(200).json({ message: 'Senha alterada com sucesso!' });
+        } catch (error) {
+            if (error.message === 'Senha atual incorreta') {
+            return res.status(401).json({ message: 'Senha atual incorreta.' });
+            }
+            if (error.message === 'Usuário não encontrado' || error.message.includes('Token')) {
+            return res.status(401).json({ message: error.message });
+            }
+            
+            console.error(error);
+            return res.status(500).json({ message: 'Erro interno do servidor.' });
+        }
+    }
+
     static async logout(req, res) {
         try {
             await userService.logout();

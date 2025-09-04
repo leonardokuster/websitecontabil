@@ -226,7 +226,10 @@ export default function ProfilePage() {
                                     bgcolor: 'var(--cordestaque)',
                                     color: 'white',
                                     mt: '20px',
-                                    borderRadius: '50px'
+                                    borderRadius: '50px',
+                                    '&:hover': {
+                                        bgcolor: 'var(--corhover)',
+                                    },
                                 }}
                             >
                                 {formik.isSubmitting ? 'Salvando...' : (isSmallScreen ? <SaveIcon /> : 'Salvar alterações')}

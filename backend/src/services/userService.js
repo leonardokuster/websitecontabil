@@ -156,6 +156,34 @@ class UserService {
         }
     }
 
+    async alterarSenha(currentPassword, newPassword, token) {
+        let decodedToken;
+        
+        try {
+            decodedToken = jwt.verify(token, userToken.secret); 
+        } catch (err) {
+            throw new Error('Token inválido ou expirado');
+        }
+
+        const id = decodedToken.id; 
+
+        const user = await database.User.findByPk(id);
+        if (!user) {
+            throw new Error('Usuário não encontrado');
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(currentPassword, user.senha);
+        if (!isPasswordCorrect) {
+            throw new Error('Senha atual incorreta');
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+
+        user.senha = hashedNewPassword;
+        await user.save();
+    }
+
     async logout() {
         return true;
     }
