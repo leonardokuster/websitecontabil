@@ -35,9 +35,16 @@ export default function Header() {
             <AppBar position="static" sx={{ backgroundColor: '#070E26', zIndex: menuOpen ? 1100 : 1000 }}>
                 <Toolbar>
                     <Typography component="div" sx={{ flexGrow: 1, paddingLeft: '10px' }}>
-                        <Link href="/">
-                            < Image src="/images/Logo.webp" alt="Logo do escritório" width={136} height={50} />
-                        </Link>
+                        <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                            <Link href="/">
+                                < Image src="/images/Logo.png" alt="Logo do escritório" width={260} height={50} />
+                            </Link>
+                        </Box>
+                        <Box sx={{ display: { xs: 'block', md: 'none' } }}> 
+                            <Link href="/">
+                                < Image src="/images/LogoMobile.png" alt="Logo do escritório" width={70} height={50} />
+                            </Link>
+                        </Box>
                     </Typography>
                     <Tooltip title="Menu">
                         <IconButton

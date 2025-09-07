@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import Box from '@mui/material/Box';
 import Link from 'next/link';
 import styles from '@/components/footer/footer.module.css';
 import Image from 'next/image';
@@ -7,7 +10,16 @@ export default function Footer() {
   return (
     <div className={styles['footer']}>
         <div className={styles['section']} style={{ alignSelf: 'center' }}>
-            <Link href="/"><Image src="/images/Logo.webp" alt="Logo do escritório" className={styles['logo']} width={136} height={50}/></Link>
+            <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                <Link href="/">
+                    < Image src="/images/Logo.png" alt="Logo do escritório" width={260} height={50} />
+                </Link>
+            </Box>
+            <Box sx={{ display: { xs: 'block', md: 'none' } }}> 
+                <Link href="/">
+                    < Image src="/images/LogoMobile.png" alt="Logo do escritório" width={70} height={50} />
+                </Link>
+            </Box>
             <p className={styles['paragrafo']} style={{lineHeight: '2em'}}>Conduzindo o seu caminho para o sucesso empresarial, onde a excelência se encontra com a dedicação.</p>
         </div>
         <div className={styles['section']}>
