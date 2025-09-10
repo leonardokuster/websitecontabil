@@ -128,7 +128,7 @@ export default function CompanyEditPage() {
         };
 
         fetchCompany();
-    }, [companyId, userId]);
+    }, [companyId, userId, formik, router]);
 
     const handleCancel = () => {
         const redirectPath = `/dashboard/management/company?userId=${userId}`;
