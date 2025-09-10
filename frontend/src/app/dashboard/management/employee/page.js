@@ -50,10 +50,10 @@ export default function EmployeeList() {
             }
             
             try {
-                const companyResponse = await axios.get(`http://localhost:3001/users/${userId}/companies/${urlCompanyId}`, { withCredentials: true });
+                const companyResponse = await axios.get(`/api/users/${userId}/companies/${urlCompanyId}`, { withCredentials: true });
                 setCompanyName(companyResponse.data.nomeFantasia || companyResponse.data.razaoSocial);
 
-                const employeeResponse = await axios.get(`http://localhost:3001/users/${userId}/companies/${urlCompanyId}/employees`, { withCredentials: true });
+                const employeeResponse = await axios.get(`/api/users/${userId}/companies/${urlCompanyId}/employees`, { withCredentials: true });
                 setEmployees(employeeResponse.data);
 
             } catch (err) {
@@ -81,7 +81,7 @@ export default function EmployeeList() {
 
     const confirmDelete = async () => {
         try {
-            await axios.delete(`http://localhost:3001/users/${userId}/companies/${urlCompanyId}/employees/${employeeToDeleteId}`, { withCredentials: true });
+            await axios.delete(`/api/users/${userId}/companies/${urlCompanyId}/employees/${employeeToDeleteId}`, { withCredentials: true });
             setEmployees(employees.filter(c => c.id !== employeeToDeleteId));
             setIsDeleteDialogOpen(false);
             setEmployeeToDeleteId(null);

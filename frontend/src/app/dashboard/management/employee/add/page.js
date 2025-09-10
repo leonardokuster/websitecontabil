@@ -156,7 +156,7 @@ export default function EmployeeAddPage() {
 
                 console.log('Dados a serem enviados:', valuesToSend);
 
-                await axios.post(`http://localhost:3001/users/${userId}/companies/${companyId}/employees`, valuesToSend, { withCredentials: true });
+                await axios.post(`/api/users/${userId}/companies/${companyId}/employees`, valuesToSend, { withCredentials: true });
                 const redirectPath = `/dashboard/management/employee?companyId=${companyId}&userId=${userId}`;
                 router.push(redirectPath);
             } catch (err) {

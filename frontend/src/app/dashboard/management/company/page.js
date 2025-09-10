@@ -51,10 +51,10 @@ export default function CompanyList() {
             setUserType(storedUserType || '');
             
             try {
-                const userResponse = await axios.get(`http://localhost:3001/users/${userId}`, { withCredentials: true });
+                const userResponse = await axios.get(`/api/users/${userId}`, { withCredentials: true });
                 setUserName(userResponse.data.nome);
 
-                const companiesResponse = await axios.get(`http://localhost:3001/users/${userId}/companies`, { withCredentials: true });
+                const companiesResponse = await axios.get(`/api/users/${userId}/companies`, { withCredentials: true });
                 const companiesData = Array.isArray(companiesResponse.data) ? companiesResponse.data : [companiesResponse.data];
 
                 const validCompanies = companiesData.filter(company => company !== null && company !== undefined);
@@ -84,7 +84,7 @@ export default function CompanyList() {
 
     const confirmDelete = async () => {
         try {
-            await axios.delete(`http://localhost:3001/users/${userId}/companies/${companyToDeleteId}`, { withCredentials: true });
+            await axios.delete(`/api/users/${userId}/companies/${companyToDeleteId}`, { withCredentials: true });
             setCompanies(companies.filter(c => c.id !== companyToDeleteId));
             setIsDeleteDialogOpen(false);
             setCompanyToDeleteId(null);

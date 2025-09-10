@@ -53,7 +53,7 @@ export default function ContactForm({ showSecondTextField, showSecondButton, sec
         validationSchema: validationSchema,
         onSubmit: async (values, { resetForm }) => {
             try {
-              const response = await axios.post('http://localhost:3001/contact/', values, {
+              const response = await axios.post('/api/contact/', values, {
                 headers: { 'Content-Type': 'application/json' },
               });
               setMessage('Sua mensagem foi enviada com sucesso! Em breve nossa equipe entrará em contato.');

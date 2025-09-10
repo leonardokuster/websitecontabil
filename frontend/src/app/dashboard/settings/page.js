@@ -67,7 +67,7 @@ export default function SettingsPage() {
             }
 
             try {
-                await axios.put(`http://localhost:3001/users/changePassword/${userId}`, 
+                await axios.put(`/api/users/changePassword/${userId}`, 
                 { 
                     currentPassword: values.senhaAtual,
                     newPassword: values.novaSenha,
@@ -99,7 +99,7 @@ export default function SettingsPage() {
         if (!userToDeleteId) return;
 
         try {
-            await axios.delete(`http://localhost:3001/users/${userToDeleteId}`, { withCredentials: true });
+            await axios.delete(`/api/users/${userToDeleteId}`, { withCredentials: true });
             setIsDeleteDialogOpen(false);
             setUserToDeleteId(null);
             Cookies.remove('usuario_id'); 

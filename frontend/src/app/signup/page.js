@@ -195,7 +195,7 @@ export default function Signup() {
                     possuiEmpresa: values.possuiEmpresa,
                 };
 
-                const userResponse = await axios.post('http://localhost:3001/users', userValues, { 
+                const userResponse = await axios.post('/api/users', userValues, { 
                     withCredentials: true,
                     headers: { 'Content-Type': 'application/json' },
                 });
@@ -219,7 +219,7 @@ export default function Signup() {
                         socios: values.socios,
                         userId, 
                     };
-                    await axios.post(`http://localhost:3001/users/${userId}/companies`, companyValues, { 
+                    await axios.post(`/api/users/${userId}/companies`, companyValues, { 
                         withCredentials: true,
                         headers: { 'Content-Type': 'application/json' },
                     });

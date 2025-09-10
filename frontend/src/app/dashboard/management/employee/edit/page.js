@@ -153,7 +153,7 @@ export default function EmployeeEditPage() {
 
                 console.log('Dados a serem enviados:', valuesToSend);
 
-                await axios.put(`http://localhost:3001/users/${userId}/companies/${companyId}/employees/${employeeId}`, valuesToSend, { withCredentials: true });
+                await axios.put(`/api/users/${userId}/companies/${companyId}/employees/${employeeId}`, valuesToSend, { withCredentials: true });
                 const redirectPath = `/dashboard/management/employee?companyId=${companyId}&userId=${userId}`;
                 router.push(redirectPath);
             } catch (err) {
@@ -173,7 +173,7 @@ export default function EmployeeEditPage() {
 
         const fetchEmployee = async () => {
             try {
-                const response = await axios.get(`http://localhost:3001/users/${userId}/companies/${companyId}/employees/${employeeId}`, { withCredentials: true });
+                const response = await axios.get(`/api/users/${userId}/companies/${companyId}/employees/${employeeId}`, { withCredentials: true });
                 const employeeData = response.data;
                 setOriginalSalario(employeeData.salario);
 

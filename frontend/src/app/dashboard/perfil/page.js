@@ -82,7 +82,7 @@ export default function ProfilePage() {
                     valuesToSend.dataNascimento = format(parsedDate, 'yyyy-MM-dd');
                 }
 
-                await axios.put(`http://localhost:3001/users/${userId}`, valuesToSend, { withCredentials: true });
+                await axios.put(`/api/users/${userId}`, valuesToSend, { withCredentials: true });
                 setUser({
                     ...valuesToSend,
                     dataNascimento: valuesToSend.dataNascimento ? format(parse(valuesToSend.dataNascimento, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy'): '',
@@ -104,7 +104,7 @@ export default function ProfilePage() {
             }
 
             try {
-                const response = await axios.get(`http://localhost:3001/users/${userId}`, { 
+                const response = await axios.get(`/api/users/${userId}`, { 
                     withCredentials: true
                 }); 
 

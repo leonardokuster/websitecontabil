@@ -90,7 +90,7 @@ export default function CompanyRegisterPage() {
                 
                 console.log('Dados a serem enviados:', valuesToSend);
 
-                await axios.post(`http://localhost:3001/users/${userId}/companies`, valuesToSend, { withCredentials: true });                
+                await axios.post(`/api/users/${userId}/companies`, valuesToSend, { withCredentials: true });                
                 const redirectPath = `/dashboard/management/company?userId=${userId}`;
                 router.push(redirectPath);
             } catch (err) {

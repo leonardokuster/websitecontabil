@@ -42,7 +42,7 @@ export default function ContactsPage() {
 
         const fetchContacts = async () => {
             try {
-                const response = await axios.get('http://localhost:3001/contact/', { withCredentials: true });
+                const response = await axios.get('/api/contact/', { withCredentials: true });
                 setContacts(response.data);
             } catch (err) {
                 console.error('Erro ao carregar contatos:', err);
@@ -58,7 +58,7 @@ export default function ContactsPage() {
     const handleStatusChange = async (contactId, newStatus) => {
         try {
             await axios.patch(
-                `http://localhost:3001/contact/${contactId}/status`,
+                `/api/contact/${contactId}/status`,
                 { status: newStatus },
                 { withCredentials: true }
             );

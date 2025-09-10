@@ -18,7 +18,7 @@ export default function ServicesPage() {
         const fetchUserData = async () => {
             if (loggedInUserId) {
                 try {
-                    const response = await axios.get(`http://localhost:3001/users/${loggedInUserId}`, { withCredentials: true });
+                    const response = await axios.get(`/api/users/${loggedInUserId}`, { withCredentials: true });
                     setUserData(response.data);
                 } catch (error) {
                     console.error('Erro ao buscar dados do usuário:', error);

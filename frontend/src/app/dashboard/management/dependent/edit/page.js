@@ -78,7 +78,7 @@ export default function DependentEditPage() {
 
                 console.log('Dados a serem enviados:', valuesToSend);
 
-                await axios.put(`http://localhost:3001/users/${userId}/companies/${companyId}/employees/${employeeId}/dependents/${dependentId}`, valuesToSend, { withCredentials: true });
+                await axios.put(`/api/users/${userId}/companies/${companyId}/employees/${employeeId}/dependents/${dependentId}`, valuesToSend, { withCredentials: true });
                 const redirectPath = `/dashboard/management/dependent?employeeId=${employeeId}&companyId=${companyId}&userId=${userId}`;
                 router.push(redirectPath);
             } catch (err) {
@@ -98,7 +98,7 @@ export default function DependentEditPage() {
 
         const fetchDependent = async () => {
             try {
-                const response = await axios.get(`http://localhost:3001/users/${userId}/companies/${companyId}/employees/${employeeId}/dependents/${dependentId}`, { withCredentials: true });
+                const response = await axios.get(`/api/users/${userId}/companies/${companyId}/employees/${employeeId}/dependents/${dependentId}`, { withCredentials: true });
                 const dependentData = response.data;
 
                 formik.setValues({

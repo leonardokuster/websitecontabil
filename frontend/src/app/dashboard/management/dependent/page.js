@@ -50,10 +50,10 @@ export default function DependentList() {
             }
             
             try {
-                const employeeResponse = await axios.get(`http://localhost:3001/users/${userId}/companies/${urlCompanyId}/employees/${urlEmployeeId}`, { withCredentials: true });
+                const employeeResponse = await axios.get(`/api/users/${userId}/companies/${urlCompanyId}/employees/${urlEmployeeId}`, { withCredentials: true });
                 setEmployeeName(employeeResponse.data.nome);
 
-                const dependentResponse = await axios.get(`http://localhost:3001/users/${userId}/companies/${urlCompanyId}/employees/${urlEmployeeId}/dependents`, { withCredentials: true });
+                const dependentResponse = await axios.get(`/api/users/${userId}/companies/${urlCompanyId}/employees/${urlEmployeeId}/dependents`, { withCredentials: true });
                 setDependents(dependentResponse.data);
             } catch (err) {
                 console.error('Erro ao carregar dados:', err);
@@ -86,7 +86,7 @@ export default function DependentList() {
 
     const confirmDelete = async () => {
         try {
-            await axios.delete(`http://localhost:3001/users/${userId}/companies/${urlCompanyId}/employees/${urlEmployeeId}/dependents/${dependentToDeleteId}`, { withCredentials: true });
+            await axios.delete(`/api/users/${userId}/companies/${urlCompanyId}/employees/${urlEmployeeId}/dependents/${dependentToDeleteId}`, { withCredentials: true });
             setDependents(dependents.filter(c => c.id !== dependentToDeleteId));
             setIsDeleteDialogOpen(false);
             setDependentToDeleteId(null);

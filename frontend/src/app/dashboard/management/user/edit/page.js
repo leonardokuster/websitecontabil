@@ -68,7 +68,7 @@ export default function UserEditPage() {
                     valuesToSend.dataNascimento = format(parsedDate, 'yyyy-MM-dd');
                 }
 
-                await axios.put(`http://localhost:3001/users/${userId}`, valuesToSend, { withCredentials: true });
+                await axios.put(`/api/users/${userId}`, valuesToSend, { withCredentials: true });
                 router.push('/dashboard/management'); 
             } catch (err) {
                 console.error('Erro ao salvar usuário:', err);
@@ -88,7 +88,7 @@ export default function UserEditPage() {
 
         const fetchUser = async () => {
             try {
-                const response = await axios.get(`http://localhost:3001/users/${userId}`, { withCredentials: true });
+                const response = await axios.get(`/api/users/${userId}`, { withCredentials: true });
                 const userData = response.data;
                 const formattedUserData = {
                     ...userData,

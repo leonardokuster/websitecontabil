@@ -38,7 +38,7 @@ export default function Login() {
         validationSchema: validationSchema,
         onSubmit: async (values, { resetForm }) => {
             try {
-                const response = await axios.post('http://localhost:3001/users/login', values, { 
+                const response = await axios.post('/api/users/login', values, { 
                     withCredentials: true,
                     headers: { 'Content-Type': 'application/json' },
                 });

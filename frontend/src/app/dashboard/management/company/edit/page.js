@@ -91,7 +91,7 @@ export default function CompanyEditPage() {
                         : Number(values.capitalSocial.replace(/\./g, '').replace(',', '.')) || 0
                 };
 
-                await axios.put(`http://localhost:3001/users/${userId}/companies/${companyId}`, formattedValues, { withCredentials: true });
+                await axios.put(`/api/users/${userId}/companies/${companyId}`, formattedValues, { withCredentials: true });
                 router.push(`/dashboard/management/company?userId=${userId}`);
             } catch (err) {
                 console.error('Erro ao salvar empresa:', err);
@@ -109,7 +109,7 @@ export default function CompanyEditPage() {
         }
         const fetchCompany = async () => {
             try {
-                const response = await axios.get(`http://localhost:3001/users/${userId}/companies/${companyId}`, { withCredentials: true });
+                const response = await axios.get(`/api/users/${userId}/companies/${companyId}`, { withCredentials: true });
                 const companyData = response.data;
                 setOriginalCapital(companyData.capitalSocial);
 
