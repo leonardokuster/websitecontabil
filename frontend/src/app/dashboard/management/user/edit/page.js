@@ -12,7 +12,6 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { format, parse } from 'date-fns';
-
 import PhoneMask from '@/components/form/masks/phone/PhoneMask';
 import CpfMask from '@/components/form/masks/cpf/CpfMask';
 import DateMask from '@/components/form/masks/date/DateMask';
@@ -106,7 +105,7 @@ export default function UserEditPage() {
         };
 
         fetchUser();
-    }, [userId]);
+    }, [userId, router, formik]);
 
     const handleCancel = () => {
         router.push('/dashboard/management');

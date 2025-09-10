@@ -114,7 +114,7 @@ export default function DependentEditPage() {
         };
 
         fetchDependent();
-    }, [userId, companyId, employeeId, dependentId]);
+    }, [userId, companyId, employeeId, dependentId, formik, router]);
 
     const handleCancel = () => {
         const redirectPath = `/dashboard/management/dependent?employeeId=${employeeId}&companyId=${companyId}&userId=${userId}`;

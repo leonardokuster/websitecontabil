@@ -14,7 +14,7 @@ export default function FeedbackCard(props) {
             {props.name}
           </Typography>
           <Typography className={styles['message']}>
-            "{props.message}"
+            {props.message}
           </Typography>
         </Box>
       </CardContent>
