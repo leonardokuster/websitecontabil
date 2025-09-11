@@ -3,7 +3,10 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://websitecontabil-backend.vercel.app/api/$1"
+      "destination": "https://meu-backend.vercel.app/api/$1"
     }
+  ],
+  "relatedProjects": [
+    "prj_6sNe4cPka1G5AxuSrJbPlw5bdpqw" 
   ]
 }
