@@ -97,6 +97,7 @@ export default function ProfilePage() {
     });
 
     useEffect(() => {
+        console.log('%c useEffect para buscar usuário foi disparado!', 'color: red; font-size: 14px;');
         const fetchUser = async () => {
             if (!userId) {
                 setLoading(false);
