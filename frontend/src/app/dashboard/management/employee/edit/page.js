@@ -194,7 +194,7 @@ export default function EmployeeEditPage() {
         };
 
         fetchEmployee();
-    }, [userId, companyId, employeeId, router, formik]);
+    }, [userId, companyId, employeeId]);
 
     const handleCancel = () => {
         const redirectPath = `/dashboard/management/employee?companyId=${companyId}&userId=${userId}`;

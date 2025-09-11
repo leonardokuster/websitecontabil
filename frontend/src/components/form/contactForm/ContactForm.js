@@ -73,7 +73,7 @@ export default function ContactForm({ showSecondTextField, showSecondButton, sec
                 phone: initialData.telefonePessoal || '',
             });
         }
-    }, [initialData, formik]);
+    }, [initialData]);
 
     const secondButton = showSecondButton ? (
         <Button

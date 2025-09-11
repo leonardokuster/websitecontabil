@@ -105,7 +105,7 @@ export default function UserEditPage() {
         };
 
         fetchUser();
-    }, [userId, router, formik]);
+    }, [userId]);
 
     const handleCancel = () => {
         router.push('/dashboard/management');
