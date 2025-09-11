@@ -5,24 +5,18 @@ dotenv.config();
 
 export default {
   development: {
-    username: process.env.PGUSER,
-    password: process.env.PGPASSWORD,
-    database: process.env.PGDATABASE,
-    host: process.env.PGHOST,
+    use_env_variable: "DATABASE_URL",
     dialect: "postgres",
     dialectModule: pg,
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false 
+        rejectUnauthorized: false
       }
     }
   },
   test: {
-    username: process.env.PGUSER,
-    password: process.env.PGPASSWORD,
-    database: process.env.PGDATABASE,
-    host: process.env.PGHOST,
+    use_env_variable: "DATABASE_URL",
     dialect: "postgres",
     dialectModule: pg,
     dialectOptions: {
@@ -33,10 +27,7 @@ export default {
     }
   },
   production: {
-    username: process.env.PGUSER,
-    password: process.env.PGPASSWORD,
-    database: process.env.PGDATABASE,
-    host: process.env.PGHOST,
+    use_env_variable: "DATABASE_URL",
     dialect: "postgres",
     dialectModule: pg,
     dialectOptions: {
