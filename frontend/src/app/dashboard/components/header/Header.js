@@ -74,7 +74,7 @@ function ResponsiveAppBar() {
 
     const handleLogout = async () => {
         try {
-            await axios.post('/api/user/logout', {}, { withCredentials: true });
+            await axios.post('/api/users/logout', {}, { withCredentials: true });
         } catch (err) {
             console.log('Erro ao deslogar:', err);
         }
