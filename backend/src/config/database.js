@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import pg from "pg";
 
 dotenv.config();
 
@@ -8,7 +9,8 @@ export default {
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE,
     host: process.env.PGHOST,
-    dialect: process.env.PGDIALECT || "postgres",
+    dialect: "postgres",
+    dialectModule: pg,
     dialectOptions: {
       ssl: {
         require: true,
@@ -21,7 +23,8 @@ export default {
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE,
     host: process.env.PGHOST,
-    dialect: process.env.PGDIALECT || "postgres",
+    dialect: "postgres",
+    dialectModule: pg,
     dialectOptions: {
       ssl: {
         require: true,
@@ -34,7 +37,8 @@ export default {
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE,
     host: process.env.PGHOST,
-    dialect: process.env.PGDIALECT || "postgres",
+    dialect: "postgres",
+    dialectModule: pg,
     dialectOptions: {
       ssl: {
         require: true,
