@@ -122,7 +122,7 @@ export default function ProfilePage() {
             }
         };
         fetchUser();
-    }, [userId, formik]);
+    }, [userId]);
 
     if (loading) {
         return (
