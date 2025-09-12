@@ -2,28 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-    Container,
-    Typography,
-    Box,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Chip,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
-    CircularProgress,
-    Alert,
-    TablePagination,
-    useMediaQuery,
-    useTheme
-} from '@mui/material';
+import { Container, Typography, Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Select, MenuItem, FormControl, InputLabel, CircularProgress, Alert, TablePagination, useMediaQuery, useTheme } from '@mui/material';
 import axios from 'axios';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';

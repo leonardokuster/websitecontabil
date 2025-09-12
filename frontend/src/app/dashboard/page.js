@@ -7,7 +7,7 @@ import Cookies from 'js-cookie';
 export default function Home() {
     const [fullName, setFullName] = useState('');
 
-    React.useEffect(() => {
+    useEffect(() => {
         const storedFullName = Cookies.get('nome');
         if (storedFullName) {
             setFullName(storedFullName);
@@ -24,7 +24,7 @@ export default function Home() {
                 alignItems="center"
                 sx={{ height: '100%' }}
             >
-                <Grid item xs={12} sm={10} md={6}>
+                <Grid item size={{xs: 12, md: 6}}>
                     <Paper
                         elevation={3}
                         sx={{

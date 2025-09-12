@@ -30,7 +30,7 @@ export default function About() {
     return (
         <Box component="main" sx={{ p: 4 }}>
             <Container maxWidth="lg">
-                <Typography variant="h3" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
+                <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
                     SOBRE NÓS
                 </Typography>
 
