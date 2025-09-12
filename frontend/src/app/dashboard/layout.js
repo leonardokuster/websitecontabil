@@ -3,6 +3,7 @@ import Header from "@/app/dashboard/components/header/Header";
 import Footer from "@/app/dashboard/components/footer/Footer";
 import '@/styles/globals.css';
 import Wrapper from "@/app/wrapper";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata = {
   title: 'Escritório Küster - Sua jornada contábil começa aqui',
@@ -19,6 +20,7 @@ export default function RootLayout({ children }) {
         <Header />
         <Wrapper>{children}</Wrapper>
         <Footer />
+        <SpeedInsights />
       </body>
     </html>
   );

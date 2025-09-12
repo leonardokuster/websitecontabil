@@ -2,6 +2,7 @@ import React from "react";
 import ConditionalLayout from "@/components/conditionalLayout/conditionalLayout";
 import '@/styles/globals.css';
 import Wrapper from "@/app/wrapper";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata = {
   title: 'Escritório Küster - Sua jornada contábil começa aqui',
@@ -18,6 +19,7 @@ export default function RootLayout({ children }) {
         <ConditionalLayout>
           <Wrapper>{children}</Wrapper>
         </ConditionalLayout>
+        <SpeedInsights />
       </body>
     </html>
   );
