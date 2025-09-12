@@ -112,7 +112,7 @@ function ResponsiveAppBar() {
                         display: { xs: 'none', md: 'flex' },
                     }}
                 >
-                    <Image src="/images/Favicon.png" alt="Logo do escritório" width={50} height={40} />
+                    <Image src="/images/LogoMobile.png" alt="Logo do escritório" width={50} height={40} />
                 </Typography>
 
                 <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
