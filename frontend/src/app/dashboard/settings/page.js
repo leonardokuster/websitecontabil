@@ -133,7 +133,7 @@ export default function SettingsPage() {
                     
                     {!editingPassword ? (
                         <>
-                        `<Typography variant="body1" gutterBottom>
+                        <Typography variant="body1" gutterBottom>
                             Deseja alterar a senha?
                         </Typography>
                             <Button
